@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CKK.Models
 {
-    public class Products
+    internal class Store
     {
     }
 }
