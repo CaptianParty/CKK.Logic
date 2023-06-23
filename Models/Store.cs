@@ -67,14 +67,22 @@ namespace CKK.Logic.Models
                 _product2 = null;
             }
 
-            if (productNumber == 0)
+            if (productNumber == 2)
             {
                 _product3 = null;
             }
         }
+        public int GetStoreItems(int productNumber)
+        {
+            
+                return productNumber;
+        }
+
+        public int FindStoreItemByld(int id) 
+        {
+            return id;
+        }
+
     }
-    public int GetStoreItems(int productNumber)
-    {
-       
-    }
+   
 }
