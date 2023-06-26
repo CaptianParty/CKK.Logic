@@ -1,4 +1,4 @@
-﻿namespace CKK.Tests
+﻿namespace CKK.Logic.Models
 {
     public class ShoppingCartItem
     {

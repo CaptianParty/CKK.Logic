@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CKK.Tests
+namespace CKK.Logic.Models
 {
     public class Store
     {
