@@ -25,7 +25,7 @@
         }
        public decimal GetTotal()
         {
-            return _quantity;
+            return _quantity * _product.GetPrice();
         }
     }
 }
