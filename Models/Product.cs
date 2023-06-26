@@ -1,4 +1,5 @@
-﻿namespace CKK.Logic.Models
+﻿namespace CKK.Tests
+
 {
     public class Product
     {

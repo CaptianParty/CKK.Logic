@@ -1,4 +1,4 @@
-﻿using CKK.Logic.Models;
+﻿using CKK.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CKK.Logic.Models
+namespace CKK.Tests
 {
     public class Store
     {
