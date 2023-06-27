@@ -31,17 +31,17 @@ namespace CKK.Logic.Models
 
         public void AddStoreItem(Product product)
         {// null means uknown
-            if (_product1 != null)
+            if (_product1 == null)
             {
                 _product1 = product;
             }
 
-            if (_product2 != null)
+            else if (_product2 == null)
             {
                 _product2 = product;
             }
 
-            if (_product3 != null)
+            else if (_product3 == null)
             {
                 _product3 = product;
             }
@@ -55,12 +55,12 @@ namespace CKK.Logic.Models
                 _product1 = null;
             }
 
-            if (productNumber == 0)
+            if (productNumber == 2)
             {
                 _product2 = null;
             }
 
-            if (productNumber == 2)
+            if (productNumber == 3)
             {
                 _product3 = null;
             }
@@ -92,12 +92,12 @@ namespace CKK.Logic.Models
                 return (_product1);
             }
 
-            if (_product1.GetId() == id)
+            if (_product2.GetId() == id)
             {
                 return _product2;
             }
 
-            if (_product1.GetId() == id)
+            if (_product3.GetId() == id)
             {
                 return (_product3);
             }
