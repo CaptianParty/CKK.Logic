@@ -4,10 +4,10 @@ namespace CKK.Logic.Models
     public class Store
     {
         private int _id;
-        private string _name;
-        private Product _product1;
-        private Product _product2;
-        private Product _product3;
+        private string? _name;
+        private Product? _product1;
+        private Product? _product2;
+        private Product? _product3;
 
         public int GetId()
         {
@@ -19,7 +19,7 @@ namespace CKK.Logic.Models
             _id = id;
         }
 
-        public string GetName()
+        public string? GetName()
         {
             return _name;
         }
