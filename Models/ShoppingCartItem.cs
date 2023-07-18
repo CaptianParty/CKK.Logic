@@ -27,5 +27,7 @@
         {
             return _quantity * _product.GetPrice();
         }
+
+        
     }
 }
