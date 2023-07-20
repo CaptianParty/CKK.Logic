@@ -4,6 +4,8 @@
     {
         private Product _product;
         private int _quantity;
+        private ShoppingCartItem toy;
+        private int v;
 
         public ShoppingCartItem(Product product, int quantity) 
         {
@@ -11,6 +13,13 @@
             _quantity = quantity;
 
         }
+
+        public ShoppingCartItem(ShoppingCartItem toy, int v)
+        {
+            this.toy = toy;
+            this.v = v;
+        }
+
         public int GetQuantity()
         { return _quantity; }
         public void SetQuantity(int quantity)
