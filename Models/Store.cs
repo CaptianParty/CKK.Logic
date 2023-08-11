@@ -1,4 +1,6 @@
 ﻿
+using System.Security.Cryptography.X509Certificates;
+
 namespace CKK.Logic.Models
 {
     public class Store
@@ -8,6 +10,20 @@ namespace CKK.Logic.Models
         private Product? _product1;
         private Product? _product2;
         private Product? _product3;
+
+        new 
+            public List<StoreItem> item = new List<StoreItem>();
+        public StoreItem AddItem(Product product, int quantity)
+        {
+            var x = new StoreItem(product, quantity);
+                item.Add(x);
+            return x;
+
+            if(item == null)
+            {
+                item = new List<StoreItem>();
+            }
+        }
 
         public int GetId()
         {
@@ -28,60 +44,66 @@ namespace CKK.Logic.Models
         {
             _name = name;
         }
-
-        public void AddStoreItem(Product product)
-        {// null means uknown
-            if (_product1 == null)
+                //void
+        public StoreItem AddStoreItem(Product product, int quantity)
+        { 
+            StoreItem item1 = new StoreItem(product, quantity);
+            if (quantity < 0)
             {
-                _product1 = product;
+                return null;
             }
-
-            else if (_product2 == null)
+            for (int x = 0; x < item.Count; x++)
             {
-                _product2 = product;
+                if (item[x].GetProduct().GetId() == product.GetId())
+                {
+                    item[x].SetQuantity(item[x].GetQuantity() + quantity);
+                    return item[x];
+                }
+               else
+                {
+                    //add new storeitem
+                    item.Add(item1);
+                    return item1;
+                }
             }
-
-            else if (_product3 == null)
-            {
-                _product3 = product;
-            }
+            return AddStoreItem(product, quantity);
+            
 
 
         }
-        public void RemoveStoreItem(int productNumber)
-        {
-            if (productNumber == 1)
+        //FIGURE THIS OUT DUMMY
+
+        public StoreItem RemoveStoreItem(int quantity, int id)
+        { 
+            StoreItem item1 = RemoveStoreItem(quantity, id);
+            if (quantity < 0)
             {
-                _product1 = null;
+                return null;
             }
 
-            if (productNumber == 2)
+            for (int x = 0; x< item.Count; x++)
             {
-                _product2 = null;
-            }
+                {
+                    if (id == item[x].GetProduct().GetId())
+                    {
+                        return item[x];
+                    }
 
-            if (productNumber == 3)
-            {
-                _product3 = null;
+                    if (item[x].GetQuantity() < quantity)
+                    {quantity = item[x].GetQuantity();
+                        item[x].GetProduct().GetId();
+                            return item[x];
+                        }
+                    
+                }
             }
+            return RemoveStoreItem(quantity, id);
         }
-        public Product GetStoreItem(int productNumber)
+        public List<StoreItem>  GetStoreItem()
         {
-            if (productNumber == 1)
-            {
-                return (_product1);
-            }
 
-            if (productNumber == 2)
-            {
-                return _product2;
-            }
 
-            if (productNumber == 3)
-            {
-                return (_product3);
-            }
-            return null;
+            return item;
 
         }
 
