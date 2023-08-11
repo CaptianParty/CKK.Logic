@@ -48,7 +48,7 @@ namespace CKK.Logic.Models
         public StoreItem AddStoreItem(Product product, int quantity)
         { 
             StoreItem item1 = new StoreItem(product, quantity);
-            if (quantity < 0)
+            if (quantity >= 0)
             {
                 return null;
             }
@@ -56,7 +56,7 @@ namespace CKK.Logic.Models
             {
                 if (item[x].GetProduct().GetId() == product.GetId())
                 {
-                    item[x].SetQuantity(item[x].GetQuantity() + quantity);
+                    item[x].SetQuantity(item[x].GetQuantity() - quantity);
                     return item[x];
                 }
                else
@@ -78,6 +78,7 @@ namespace CKK.Logic.Models
             StoreItem item1 = RemoveStoreItem(quantity, id);
             if (quantity < 0)
             {
+                quantity = 0;
                 return null;
             }
 
@@ -96,7 +97,7 @@ namespace CKK.Logic.Models
                         }
                     
                 }
-            }
+            }//MAYBE DUMMY?
             return RemoveStoreItem(quantity, id);
         }
         public List<StoreItem>  GetStoreItem()
