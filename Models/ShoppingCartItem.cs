@@ -1,4 +1,6 @@
-﻿namespace CKK.Logic.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+namespace CKK.Logic.Models
 {
     public class ShoppingCartItem
     {
@@ -6,6 +8,8 @@
         private int _quantity;
         private ShoppingCartItem toy;
         private int v;
+
+        
 
         public ShoppingCartItem(Product product, int quantity) 
         {
