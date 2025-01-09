@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CKK.Logic">
+      <HintPath>..\CKK.Persistance\bin\Debug\net8.0\CKK.Logic.dll</HintPath>
+    </Reference>
+    <Reference Include="CKK.Persistance">
+      <HintPath>..\CKK.Persistance\bin\Debug\net8.0\CKK.Persistance.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
