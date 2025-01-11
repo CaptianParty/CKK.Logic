@@ -129,7 +129,7 @@ namespace CKK.Logic.Models
                 throw new ArgumentException("Name cannot be null or empty", nameof(name));
             }
 
-            if(name == char.MinValue.ToString() || name == char.MaxValue.ToString())
+           /* if(name == char.MinValue.ToString() || name == char.MaxValue.ToString())
             {
                 if (!Items.Any())
                 {
@@ -138,7 +138,7 @@ namespace CKK.Logic.Models
 
                 name = Items.First().GetProduct().Name;
                 return GetAllProductsByName(name);
-            }
+            }*/
 
             return Items.Where(x => x.GetProduct().Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
             

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CKK.UI"
         mc:Ignorable="d"
-        Title="Employee Logged in" Height="467" Width="1409">
+        Title="Employee Logged in" Height="467" Width="1409" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <StackPanel>
         <Grid Height="324">
 
@@ -33,22 +33,14 @@
 
             </Grid.ColumnDefinitions>
 
-           <!--SEARCH TEXTBOX-->
-            <TextBox x:Name="searchTextBox"
-                        Grid.Row="1" Grid.Column="6" Padding="5"
-                        ToolTip="Search by name is Case Sensitive/Quantity/Price" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        TextChanged="searchTextBox_TextChanged" Width="auto" 
-                        
-                        />
-
             <Label Content="Here is Coreys Knick Knack Shop Inventory." FontSize="25" HorizontalAlignment="Center" Grid.Row="1" 
                Grid.Column="1" Grid.ColumnSpan="8"/>
-            
+
             <!--STACKPANEL FOR RADIOBUTTONS-->
             <StackPanel Grid.Row="2"  Grid.Column="6" Orientation="Vertical" HorizontalAlignment="Center">
                 <RadioButton x:Name="idRadioButton" Content="Id" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="True"/>
                 <RadioButton x:Name="nameRadioButton" Content="Name" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
-                <RadioButton x:Name="quantityRadioButton" Content="Quantity" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" /> 
+                <RadioButton x:Name="quantityRadioButton" Content="Quantity" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
                 <RadioButton x:Name="priceRadioButton" Content="Price" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
             </StackPanel>
 
@@ -89,16 +81,24 @@
                     PreviewTextInput="numberTextBox_PreviewTextInput" 
                     ToolTip="Numbers only" Grid.Row="5" Grid.Column="2"/>
 
+            <!--SEARCH-->
+            <TextBox x:Name="searchTextBox"
+             Grid.Row="1" Grid.Column="6" Padding="5"
+             ToolTip="Search by name" Height="30" VerticalAlignment="Center" 
+             TextChanged="searchTextBox_TextChanged" Margin="42,0,10,0"
+             />
 
-
+            <Label Content="Search:" FontSize="10" Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" Margin="0,0,105,0" Height="20" HorizontalAlignment="Left"/>
 
             <!--LIST BOX-->
-            <ListBox FontSize="25" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" Height="200" 
-                 Grid.Column="3" Grid.ColumnSpan="3" 
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Margin="10,7,498,6" 
-           
+            <ListBox FontSize="15" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" 
+                     Height="200" Grid.Column="2" Grid.ColumnSpan="4" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                 ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding ElementName=searchTextBox, Mode=OneWay}"
                  />
-            <ListView x:Name="lvItemList" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" Grid.RowSpan="4" Height="200" >
+
+            <ListView x:Name="lvItemList" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" 
+                      Grid.RowSpan="4" Height="200" >
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Id" Width="auto" DisplayMemberBinding="{Binding Product.Id}"/>
@@ -131,8 +131,8 @@
 
             <Button Content="Remove" x:Name="removeButton" FontSize="30"
                 Padding="5" Grid.Row="0" Grid.Column="2" Click="removeButton_Click"/>
-            
-            
+
+
         </Grid>
 
     </StackPanel>

@@ -39,56 +39,36 @@ namespace CKK.UI
         private void RefreshList()
         {
             storeItems.Clear();
-            inventoryListBox.Items.Clear();
             foreach (var item in Store.GetStoreItems())
             {
                 storeItems.Add(item);
-                inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
-                        $"\nName: {item.Product.Name}, " +
-                        $"\nPrice: ${item.Product.Price}," +
-                        $"\nQuantity: {item.Quantity},");
             }
         }
 
         private void RefreshListByName()
         {
             storeItems.Clear();
-            inventoryListBox.Items.Clear();
             foreach (var item in Store.GetStoreItems().OrderBy(x=>x.Product.Name))
             {
                 storeItems.Add(item);
-                inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
-                        $"\nName: {item.Product.Name}, " +
-                        $"\nPrice: ${item.Product.Price}," +
-                        $"\nQuantity: {item.Quantity},");
             }
         }
 
         private void RefreshListByQuantity()
         {
             storeItems.Clear();
-            inventoryListBox.Items.Clear();
             foreach (var item in Store.GetStoreItems().OrderByDescending(x => x.Quantity))
             {
                 storeItems.Add(item);
-                inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
-                        $"\nName: {item.Product.Name}, " +
-                        $"\nPrice: ${item.Product.Price}," +
-                        $"\nQuantity: {item.Quantity},");
             }
         }
 
         private void RefreshListByPrice()
         {
             storeItems.Clear();
-            inventoryListBox.Items.Clear();
             foreach (var item in Store.GetStoreItems().OrderByDescending(x => x.Product.Price))
             {
                 storeItems.Add(item);
-                inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
-                        $"\nName: {item.Product.Name}, " +
-                        $"\nPrice: ${item.Product.Price}," +
-                        $"\nQuantity: {item.Quantity},");
             }
         }
 
@@ -97,21 +77,17 @@ namespace CKK.UI
             if (inventoryListBox != null) 
             {
                 storeItems.Clear();
-                inventoryListBox.Items.Clear();
                 foreach (var item in Store.GetStoreItems().OrderBy(x => x.Product.Id))
                 {
                     storeItems.Add(item);
-                    inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
-                            $"\nName: {item.Product.Name}, " +
-                            $"\nPrice: ${item.Product.Price}," +
-                            $"\nQuantity: {item.Quantity},");
                 }
             }
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
-            if (idTextBox.Text == "" && nameTextBox.Text != "" && priceTextBox.Text != "" && quantityTextBox.Text != "")
+            if (idTextBox.Text == "" && nameTextBox.Text != "" 
+                && priceTextBox.Text != "" && quantityTextBox.Text != "")
             {
                 Product product = new Product();
                 product.Name = nameTextBox.Text;
@@ -150,7 +126,8 @@ namespace CKK.UI
             }
         }
 
-        private void numberTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void numberTextBox_PreviewTextInput(object sender, 
+            System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = !IsNumeric(e.Text);
         }
@@ -184,26 +161,26 @@ namespace CKK.UI
             if (searchTextBox.Text == "")
             {
                 RefreshList();
+                inventoryListBox.Items.Clear();
             }
             
             else
             {
-                storeItems.Clear();
                 inventoryListBox.Items.Clear();
 
-                foreach (var item in Store.GetAllProductsByName(searchTextBox.Text))
+                foreach (var item in Store.GetStoreItems())
                 {
-                    if (item.Product.Name.Contains(searchTextBox.Text, StringComparison.OrdinalIgnoreCase))
+                    if (item.Product.Name.IndexOf(searchTextBox.Text, 
+                        StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                            storeItems.Add(item);
                             inventoryListBox.Items.Add($"Id number: {item.Product.Id}," +
                                 $"\nName: {item.Product.Name}, " +
                                 $"\nPrice: ${item.Product.Price}," +
-                                $"\nQuantity: {item.Quantity},");
+                                $"\nQuantity: {item.Quantity},\n");
                     }
                 }
             }
-        }
+        } 
         private void sortRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (nameRadioButton != null && nameRadioButton.IsChecked == true)
@@ -221,6 +198,15 @@ namespace CKK.UI
             else if (idRadioButton.IsChecked == true)
             {
                 RefreshListById();
+            }
+        }
+
+        //ADDED TO CLEAR THE INVENTORY LISTBOX WHEN THE WINDOW IS LOADED
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (inventoryListBox != null)
+            {
+                inventoryListBox.Items.Clear();
             }
         }
 
