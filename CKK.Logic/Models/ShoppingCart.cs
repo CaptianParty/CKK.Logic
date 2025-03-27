@@ -5,17 +5,17 @@ namespace CKK.Logic.Models
 {
     public class ShoppingCart : IShoppingCart
     {
-        private Customer? _Customer;
-        public List<ShoppingCartItem> Products { get; set; } = new List<ShoppingCartItem>();
-
-
+       
         public ShoppingCart(Customer cust)
         {
-            _Customer = cust;
+            Customer = cust;
 
         }
 
-
+        public int ShoppingCartId { get; set; }
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
+        public List<ShoppingCartItem> ShoppingCartItems { get; set; } = new List<ShoppingCartItem>();
 
 
 
@@ -30,7 +30,7 @@ namespace CKK.Logic.Models
             {
                 throw new InvalidIdException();
             }
-            var f = Products.FirstOrDefault(x => x.Product.Id == id);
+            var f = ShoppingCartItems.FirstOrDefault(x => x.Product.Id == id);
             return f;
         }
 
@@ -40,7 +40,7 @@ namespace CKK.Logic.Models
             {
                 throw new InventoryItemStockTooLowException();
             }
-            var f = Products.FirstOrDefault(x => x.Product.Id == prod.Id);
+            var f = ShoppingCartItems.FirstOrDefault(x => x.Product.Id == prod.Id);
             if (f != null)
             {
                 f.Quantity += quantity;
@@ -49,13 +49,13 @@ namespace CKK.Logic.Models
 
 
             var x = new ShoppingCartItem(prod, quantity);
-            Products.Add(x);
+            ShoppingCartItems.Add(x);
             return x;
 
         }
         public ShoppingCartItem RemoveProduct(int id, int quantity)
         {
-            var f = Products.FirstOrDefault(x => x.Product.Id == id);
+            var f = ShoppingCartItems.FirstOrDefault(x => x.Product.Id == id);
             if (quantity < 0)
             {
                 throw new ArgumentOutOfRangeException();
@@ -71,7 +71,7 @@ namespace CKK.Logic.Models
 
 
                 f.Quantity = 0;
-                Products.Remove(f);
+                ShoppingCartItems.Remove(f);
                 return f;
 
             }
@@ -79,7 +79,7 @@ namespace CKK.Logic.Models
         }
         public decimal GetTotal()
         {
-            return Products.Sum(x => x.Product.Price * x.Quantity);
+            return ShoppingCartItems.Sum(x => x.Product.Price * x.Quantity);
 
 
 
@@ -95,13 +95,13 @@ namespace CKK.Logic.Models
 
         public int GetCustomerID()
         {
-            return _Customer.Id;
+            return Customer.Id;
         }
 
         public List<ShoppingCartItem> GetProducts()
         {
 
-            return Products;
+            return ShoppingCartItems;
         }
 
 
