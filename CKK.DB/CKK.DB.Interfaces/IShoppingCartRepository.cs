@@ -1,0 +1,28 @@
+﻿using CKK.Logic.Exceptions;
+using CKK.Logic.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace CKK.DB.CKK.DB.Interfaces
+{
+    public interface IShoppingCartRepository<TRepo> : IGenericRepository<ShoppingCartItem>
+    {
+        ShoppingCartItem AddToCart(int ShoppingCardId, int ProductId, int quantity);
+
+        int ClearCart(int shoppingCartId);
+
+        decimal GetTotal(int ShoppingCartId);
+
+        List<ShoppingCartItem> GetProducts(int shoppingCartId);
+
+        void Ordered(int shoppingCartId);
+
+        int Update(ShoppingCartItem entity);
+
+        int Add(ShoppingCartItem entity);
+        
+    }
+}
