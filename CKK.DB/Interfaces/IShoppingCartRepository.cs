@@ -6,9 +6,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace CKK.DB.CKK.DB.Interfaces
+namespace CKK.DB.Interfaces
 {
-    public interface IShoppingCartRepository<TRepo> : IGenericRepository<ShoppingCartItem>
+    public interface IShoppingCartRepository: IGenericRepository<ShoppingCartItem>
     {
         ShoppingCartItem AddToCart(int ShoppingCardId, int ProductId, int quantity);
 

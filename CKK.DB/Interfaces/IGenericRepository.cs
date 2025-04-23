@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CKK.DB.CKK.DB.Interfaces
+namespace CKK.DB.Interfaces
 {
-    public interface IGenericRepository<TRepo> where TRepo : class
+    public interface IGenericRepository<TRepo>
     {
         TRepo GetById(int id);
         List<TRepo> GetAll();

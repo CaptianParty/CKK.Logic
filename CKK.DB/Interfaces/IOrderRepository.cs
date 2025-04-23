@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CKK.Logic.Models;
 
-namespace CKK.DB.CKK.DB.Interfaces
+namespace CKK.DB.Interfaces
 {
-    public interface IOrderRepository<TRepo>: IGenericRepository <Order>
+    public interface IOrderRepository : IGenericRepository <Order>
     {
         Order GetOrderByCustomerId(int customerId);
     }

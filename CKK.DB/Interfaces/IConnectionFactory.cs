@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CKK.DB.CKK.DB.Interfaces
+namespace CKK.DB.Interfaces
 {
-    public interface IConnectionFactory<TRepo>
+    public interface IConnectionFactory
     {
-        IDbConnection GetConnection();
+        IDbConnection GetConnection { get; }
     }
 }

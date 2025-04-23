@@ -34,28 +34,5 @@ namespace CKK.Logic.Models
             return Product.Price * Quantity;
         }
 
-        private ShoppingCartItem toy;
-        private int v;
-
-
-
-        public ShoppingCartItem(Product product, int quantity)
-        {
-
-            Product = product;
-            Quantity = quantity;
-
-        }
-
-        public ShoppingCartItem(ShoppingCartItem toy, int v)
-        {
-            this.toy = toy;
-            this.v = v;
-        }
-
-
-     
-
-
     }
 }

@@ -12,17 +12,15 @@
         <Label Height="auto" Width="auto" FontSize="25" Content="Id:" VerticalAlignment="Top" HorizontalAlignment="Left" 
             Margin="47,58,0,0"/>
 
-        <TextBlock x:Name="idTextBox" VerticalAlignment="Top" Width="222"
-            Margin="130,67,448,0" Padding="5"
-            ToolTip="Numbers only" />
-
+        <TextBox x:Name="idTextBox" VerticalAlignment="Top" HorizontalAlignment="Left" Width="222" 
+    Padding="5" Margin="130,66,0,0" IsEnabled="False"/>
         <!--NAME ROW-->
 
         <Label Content="Name:" FontSize="25" VerticalAlignment="Top" HorizontalAlignment="Left"
             Margin="24,112,0,0"/>
 
         <TextBox x:Name="nameTextBox" VerticalAlignment="Top" HorizontalAlignment="Left" Width="222" 
-            Padding="5" Margin="130,119,0,0"/>
+            Padding="5" Margin="130,127,0,0"/>
 
         <!--PRICE ROW-->
 
@@ -39,8 +37,10 @@
 
         <TextBox x:Name="quantityTextBox" VerticalAlignment="Top" HorizontalAlignment="Left" Width="222" Padding="5"
             ToolTip="Numbers only" Margin="130,226,0,0"/>
-        <Button x:Name="btSave"  Content="Save" FontSize="25" HorizontalAlignment="Left" Margin="24,302,0,0" VerticalAlignment="Top" Height="55" Width="176" Click="btSave_Click"/>
-        <Button x:Name="btCancel"  Content="Cancel" FontSize="25" HorizontalAlignment="Left" Margin="348,302,0,0" VerticalAlignment="Top" Height="55" Width="176" Click="btCancel_Click"/>
+        <Button x:Name="btSave"  Content="Save" FontSize="25" HorizontalAlignment="Left" Margin="24,302,0,0" 
+                VerticalAlignment="Top" Height="55" Width="176" Click="btSave_Click" />
+        <Button x:Name="btCancel"  Content="Cancel" FontSize="25" HorizontalAlignment="Left" Margin="348,302,0,0" 
+                VerticalAlignment="Top" Height="55" Width="176" Click="btCancel_Click"/> 
 
 
     </Grid>

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CKK.DB.CKK.DB.Interfaces
+namespace CKK.DB.Interfaces
 {
-    public interface IProductRepository<TRepo> : IGenericRepository<Product>
+    public interface IProductRepository : IGenericRepository<Product>
     {
         List<Product> GetByName(string name);
     }

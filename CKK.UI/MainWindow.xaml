@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CKK.UI"
         mc:Ignorable="d"
-        Title="Employee Logged in" Height="467" Width="1409" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Employee Logged in" Height="467" Width="1409" WindowStartupLocation="CenterScreen" Initialized="Window_Initialized">
     <StackPanel>
         <Grid Height="324">
 
@@ -40,20 +40,7 @@
             <StackPanel Grid.Row="2"  Grid.Column="6" Orientation="Vertical" HorizontalAlignment="Center">
                 <RadioButton x:Name="idRadioButton" Content="Id" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="True"/>
                 <RadioButton x:Name="nameRadioButton" Content="Name" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
-                <RadioButton x:Name="quantityRadioButton" Content="Quantity" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
-                <RadioButton x:Name="priceRadioButton" Content="Price" FontSize="15" Checked="sortRadioButton_Checked" IsChecked="False" />
             </StackPanel>
-
-            <!--ID ROW-->
-
-            <Label Height="auto" Width="auto" FontSize="25" Content="Id:" VerticalAlignment="Center" HorizontalAlignment="Center" 
-               Grid.Row="2" Grid.Column="1" 
-               Margin="0,5"/>
-
-            <TextBlock x:Name="idTextBox" VerticalAlignment="Center" Width="222"
-                 Margin="10,0,10,0" Padding="5"
-                 PreviewTextInput="numberTextBox_PreviewTextInput" 
-                 ToolTip="Numbers only" Grid.Row="2" Grid.Column="2" />
 
             <!--NAME ROW-->
 
@@ -84,26 +71,27 @@
             <!--SEARCH-->
             <TextBox x:Name="searchTextBox"
              Grid.Row="1" Grid.Column="6" Padding="5"
-             ToolTip="Search by name" Height="30" VerticalAlignment="Center" 
+             ToolTip="Search by name" Height="auto" VerticalAlignment="Center" 
              TextChanged="searchTextBox_TextChanged" Margin="42,0,10,0"
              />
 
-            <Label Content="Search:" FontSize="10" Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" Margin="0,0,105,0" Height="20" HorizontalAlignment="Left"/>
+            <Label Content="Search:" FontSize="10" Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" Margin="0,0,105,0" Height="auto" HorizontalAlignment="Left"/>
 
             <!--LIST BOX-->
             <ListBox FontSize="15" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" 
                      Height="200" Grid.Column="2" Grid.ColumnSpan="4" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                  ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding ElementName=searchTextBox, Mode=OneWay}"
+                     
                  />
 
-            <ListView x:Name="lvItemList" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" 
-                      Grid.RowSpan="4" Height="200" >
+            <ListView x:Name="itemListView" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" 
+                      Grid.RowSpan="4" Height="200" Width="auto">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Id" Width="auto" DisplayMemberBinding="{Binding Product.Id}"/>
-                        <GridViewColumn Header="Name" Width="auto" DisplayMemberBinding="{Binding Product.Name}"/>
-                        <GridViewColumn Header="Price" Width="auto" DisplayMemberBinding="{Binding Product.Price}"/>
+                        <GridViewColumn Header="Id" Width="auto" DisplayMemberBinding="{Binding Id}"/>
+                        <GridViewColumn Header="Name" Width="auto"  DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Price" Width="auto" DisplayMemberBinding="{Binding Price}"/>
                         <GridViewColumn Header="Quantity" Width="auto" DisplayMemberBinding="{Binding Quantity}"/>
                     </GridView>
                 </ListView.View>
