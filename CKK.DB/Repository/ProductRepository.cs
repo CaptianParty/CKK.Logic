@@ -31,13 +31,13 @@ namespace CKK.DB.Repository
         }
 
 
-        public int Delete(int id)
+        public int Delete(Product entity)
         {
             var sql = "DELETE FROM Products WHERE Id = @Id";
             using (var connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
-                return connection.Execute(sql, new { Id = id });
+                return connection.Execute(sql, new { Id = entity.Id});
             }
         }
 
@@ -64,9 +64,13 @@ namespace CKK.DB.Repository
 
         public List<Product> GetByName(string name)
         {
-            List<Product> products = new List<Product>();
-            return products;
-
+            string sql = "SELECT * FROM Products WHERE Name = @Name";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.Query<Product>(sql, new { Name = name }).ToList();
+                return result;
+            }
         }
 
         public int Update(Product entity)

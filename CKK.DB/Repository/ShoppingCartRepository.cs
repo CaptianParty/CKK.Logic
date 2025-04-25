@@ -10,6 +10,7 @@ using CKK.Logic.Models;
 using System.Xml.Linq;
 using Dapper;
 using CKK.DB.Repository;
+using System.Data;
 
 namespace CKK.DB.Repository
 {
@@ -26,7 +27,14 @@ namespace CKK.DB.Repository
 
         public int Add(ShoppingCartItem entity)
         {
-            throw new NotImplementedException();
+            string sql = "INSERT INTO ShoppingCartItems (ShoppingCartId,ProductId,Quantity) VALUES (ShoppingCartId = " +
+                "@ShoppingCartId, ProductId = @ProductId, Quantity = @Quantity)";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.Execute(sql, entity);
+                return result;
+            }
         }
 
         public ShoppingCartItem AddToCart(int ShoppingCardId, int ProductId, int quantity)
@@ -61,93 +69,46 @@ namespace CKK.DB.Repository
         }
 
         public int ClearCart(int shoppingCartId)
-        {//OR             List<ShoppingCartItem> cart = new List<ShoppingCartItem>();
-            List<ShoppingCartItem> cart = GetAll();
-
-            if (cart.Any(x => x.ShoppingCartId == shoppingCartId))
-            {
-                cart.RemoveAll(x => x.ShoppingCartId == shoppingCartId);
-                return 1;
-            }
-            else
-            {
-                throw new Exception("Shopping cart already empty");
-            }
-        }
-
-        public int Delete(int id)
         {
-            List<ShoppingCartItem> cart = GetAll();
-
-            ShoppingCartItem item = cart.FirstOrDefault(x => x.ShoppingCartId == id);
-
-            if (item != null)
+            string sql = "DELETE FROM ShoppingCartItems WHERE ShoppingCartId = @ShoppingCartId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                cart.Remove(item);
-                return 1;
+                connection.Open();
+                var result = connection.Execute(sql, new { ShoppingCartId = shoppingCartId });
+                return result;
             }
-            else
-            {
-                throw new Exception("Item not found");
-            }
-        }
-
-        public List<ShoppingCartItem> GetAll()
-        {//List<Order> orders = GET ALL();
-            List<ShoppingCartItem> cart = new List<ShoppingCartItem>();
-
-            foreach (var items in cart)
-            {
-                if (items != null)
-                {
-                    return cart;
-                }
-            }
-            return GetAll();
-        }
-
-        public ShoppingCartItem GetById(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public List<ShoppingCartItem> GetProducts(int shoppingCartId)
-        {//OR             List<ShoppingCartItem> cart = new List<ShoppingCartItem>();
-
-            List<ShoppingCartItem> cart = GetAll();
-
-            var ProductsInCart = cart.Where(x => x.ShoppingCartId == shoppingCartId).ToList();
-
-            if (ProductsInCart.Count > 0)
+        {
+            string sql = "SELECT * FROM ShoppingCartItems WHERE ShoppingCartId = @ShoppingCartId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                return ProductsInCart;
-            }
-            else
-            {
-                return new List<ShoppingCartItem>();
+                connection.Open();
+                var result = connection.Query<ShoppingCartItem>(sql, new { ShoppingCartId = shoppingCartId }).ToList();
+                return result;
             }
 
         }
 
         public decimal GetTotal(int ShoppingCartId)
         {
-            List<ShoppingCartItem> cart = GetProducts(ShoppingCartId);
-            decimal total = cart.Sum(item => item.Quantity * item.Product.Price);
-            return total;
+            string sql = "SELECT SUM(Quantity) FROM ShoppingCartItems WHERE ShoppingCartId = @ShoppingCartId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.QuerySingleOrDefault<decimal>(sql, new { ShoppingCartId = ShoppingCartId });
+                return result;
+            }
         }
 
         public void Ordered(int shoppingCartId)
         {
-            List<ShoppingCartItem> cart = GetProducts(shoppingCartId);
-            decimal paid = cart.Sum(item => item.GetTotal());
-            if (GetTotal(shoppingCartId) == paid)
+            string sql = "DELETE FROM ShoppingCartItems WHERE ShoppingCartId = @ShoppingCartId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                Console.WriteLine("Your order has been placed");
-                cart.Clear();
-            }
-            else
-            {
-                throw new Exception("Not all items are paid for");
+                connection.Open();
+                connection.Execute(sql, new { ShoppingCartId = shoppingCartId });
             }
         }
 

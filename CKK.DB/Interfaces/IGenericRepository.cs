@@ -12,7 +12,7 @@ namespace CKK.DB.Interfaces
         List<TRepo> GetAll();
         int Add(TRepo entity);
         int Update(TRepo entity);
-        int Delete(int id); 
+        int Delete(TRepo id); 
     }
     
 }

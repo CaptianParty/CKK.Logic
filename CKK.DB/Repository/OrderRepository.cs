@@ -8,6 +8,8 @@ using CKK.DB.Interfaces;
 using CKK.Logic.Models;
 using System.Xml.Linq;
 using Dapper;
+using System.Data;
+using CKK.Logic.Interfaces;
 
 namespace CKK.DB.Repository
 {
@@ -20,115 +22,74 @@ namespace CKK.DB.Repository
             _connectionFactory = Conn;
         }
 
-        public int CustomerId { get; set; }
-        public int OrderId { get; set;}
-        public int Quantity { get; set; }
-
-
         public int Add(Order entity)
-        {//List<Order> orders = GET ALL();
-            List<Order> orders = new List<Order>();
-
-            if (entity == null)
+        { 
+            string sql = "INSERT INTO Orders (OrderId, OrderNumber, CustomerId, ShoppingCartId) VALUES (OrderId = @OrderId, OrderNumber = @OrderNumber, CustomerId = @CustomerId, ShoppingCartId = @ShoppingCartId)";
+            
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                throw new ArgumentNullException(nameof(entity), "Entity can not be found.");
-            }
-
-            if (entity.OrderId == 0)
-            {
-                throw new Exception("Order ID cannot be 0.");
-            }
-
-            var newOrderId = Add(entity);
-            var existingOrder = GetOrderByCustomerId(newOrderId + 1);
-
-            if (existingOrder != null)
-            {
-                return entity.OrderId;
-            }
-            else
-            {
-                throw new Exception("Order has been created.");
+                connection.Open();
+                var result = connection.Execute(sql, entity);
+                return result;
             }
         }
 
-        public int Delete(int id)
-        {//List<Order> orders = GET ALL();
-
-            List<Order> orders = new List<Order>();
-            if (id == OrderId)
+        public int Delete(Order entity)
+        {
+            string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                Delete(id);
+                connection.Open();
+                var result = connection.Execute(sql, entity);
+                return result;
             }
-            else
-            {
-                throw new Exception("Order ID does not exist.");
-            }
-            return 0;
         }
 
         public List<Order> GetAll()
-        {//List<Order> orders = GET ALL();
-            List<Order> orders = new List<Order>();
-            foreach (var order in GetAll())
+        {
+            string sql = "SELECT * FROM Orders";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                if(order == null)
-                {
-                    throw new Exception("Order does not exist.");
-                }
+                connection.Open();
+                var result = connection.Query<Order>(sql).ToList();
+                return result;
             }
-            return GetAll();
         }
 
 
         public Order GetById(int id)
-        {//List<Order> orders = GET ALL();
-            List<Order> orders = new List<Order>();
-            if (id == OrderId)
+        { 
+            string sql = "SELECT * FROM Orders WHERE OrderId = @OrderId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                return GetById(id);
-            }
-            else
-            {
-                throw new Exception("Order ID does not exist.");
+                connection.Open();
+                var result = connection.QuerySingleOrDefault<Order>(sql, new { OrderId = id });
+                return result;
             }
         }
 
         
         public Order GetOrderByCustomerId(int customerId)
-        {//List<Order> orders = GET ALL();
-            List <Order> orders = new List<Order>();
-            var order = orders.FirstOrDefault(o => o.CustomerId == customerId);
-
-            if (customerId != null && customerId == CustomerId)
+        {
+            string sql = "SELECT * FROM Orders WHERE CustomerId = @CustomerId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                return order;
-            }
-
-            //MAYBE         if (order != null)    {return order;}
-            else
-            {
-                throw new Exception("Customer ID does not exist.");
+                connection.Open();
+                var result = connection.QuerySingleOrDefault<Order>(sql);
+                return result;
             }
         }
 
         public int Update(Order entity)
-        {//List<Order> orders = GET ALL();
-            List<Order> orders = new List<Order>();
-           
-            if (entity != null)
+        {
+            string sql = "UPDATE Orders SET OrderId = @OrderId, OrderNumber = @OrderNumber, CustomerId = @CustomerId, " +
+                "ShoppingCartId = @ShoppingCartId WHERE OrderId = @OrderId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
             {
-                var existingOrder = orders.FirstOrDefault(o => o.OrderId == entity.OrderId);
-                if (existingOrder != null)
-                {
-                    existingOrder.CustomerId = entity.CustomerId;
-                    existingOrder.OrderNumber= entity.OrderNumber;
-
-
-                    return 1; 
-                }
+                connection.Open();
+                var result = connection.Execute(sql, entity);
+                return result;
             }
-            return 0; 
         }
     }
 }

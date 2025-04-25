@@ -61,7 +61,7 @@ namespace CKK.UI
 
         }
 
-        //FIGURE OUT WHY ITS NOT WORKING
+        //FIXED
 
         private void RefreshListByName()
         {
@@ -125,7 +125,7 @@ namespace CKK.UI
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        unitOfWork.Products.Delete(selected.Id);
+                        unitOfWork.Products.Delete(selected);
                     }
                 }
                 RefreshList();

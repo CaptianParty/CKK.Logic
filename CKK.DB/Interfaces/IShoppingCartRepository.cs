@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace CKK.DB.Interfaces
 {
-    public interface IShoppingCartRepository: IGenericRepository<ShoppingCartItem>
+    public interface IShoppingCartRepository
     {
         ShoppingCartItem AddToCart(int ShoppingCardId, int ProductId, int quantity);
 

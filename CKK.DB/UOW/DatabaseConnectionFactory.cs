@@ -21,14 +21,12 @@ namespace CKK.DB.UOW
         }
 
         private readonly string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = StructuredProjectDB"; 
-            //Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False; 
-
-        //Data Source = (localdb)\MSSQLLocalDB;Initial Catalog = StructuredProjectDB; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False
+            
         public IDbConnection GetConnection
         {
             get
             {
-                //DbProviderFactories.RegisterFactory("System.Data.SqlClient", System.Data.SqlClient.SqlClientFactory.Instance);
+                
                 
                 DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", Microsoft.Data.SqlClient.SqlClientFactory.Instance);
                 var factory = DbProviderFactories.GetFactory("Microsoft.Data.SqlClient");
