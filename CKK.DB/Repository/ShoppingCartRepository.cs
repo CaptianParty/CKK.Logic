@@ -27,8 +27,7 @@ namespace CKK.DB.Repository
 
         public int Add(ShoppingCartItem entity)
         {
-            string sql = "INSERT INTO ShoppingCartItems (ShoppingCartId,ProductId,Quantity) VALUES (ShoppingCartId = " +
-                "@ShoppingCartId, ProductId = @ProductId, Quantity = @Quantity)";
+            string sql = "INSERT INTO ShoppingCartItems (ShoppingCartId,ProductId,Quantity) VALUES (@ShoppingCartId, @ProductId, @Quantity)";
             using (IDbConnection connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
@@ -114,8 +113,10 @@ namespace CKK.DB.Repository
 
         public int Update(ShoppingCartItem entity)
         {
-            var sql = "UPDATE ShoppingCartItems SET ShoppingCartId = @ShoppingCartId, ProductId = @ProductId," +
-                "Quantity = @Quantity WHERE ShoppingCartId = @ShoppingCartId AND Product = @ProductId";
+            var sql = "UPDATE ShoppingCartItems(ShoppingCartId,ProductId,Quantity) SET VALUES ShoppingCartId = @ShoppingCartId, @ProductId," +
+                "@Quantity WHERE ShoppingCartId = @ShoppingCartId AND Product = @ProductId";
+            //var sql = "UPDATE ShoppingCartItems SET VLUE ShoppingCartId = @ShoppingCartId, ProductId = @ProductId," +
+            //    "Quantity = @Quantity WHERE ShoppingCartId = @ShoppingCartId AND Product = @ProductId";
             using (var connection = _connectionFactory.GetConnection)
             {
                 connection.Open();

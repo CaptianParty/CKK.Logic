@@ -1,5 +1,6 @@
 ﻿@page "/shoppingcart"
 
+
 @using CKK.Logic.Models
 @using CKK.DB.UOW
 @using CKK.DB.Interfaces
@@ -48,13 +49,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (uow != null)//valid uow
+        if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);
-            if (order == null) // Make new order when no active orders found
+            if (order == null) //Make new order when no active orders found
             {
-                Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100};
-
+                Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
                 order = newOrder;
                 uow.Orders.Add(newOrder);
             }
@@ -71,11 +71,29 @@ else
     {
         //Add to Cart
         var Item = uow.ShoppingCarts.AddToCart(order.ShoppingCartId, productId, Convert.ToInt16(value));
+        UpdateTotal();
     }
 
     protected void CheckOut() 
     {
-        //Placeholder
+        //Get order info
+        var inventory = uow.Products.GetAll();
+
+        //Update quantities of products in inventory
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        foreach (var item in cartItems)
+        {
+            Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
+            prod.Quantity -= item.Quantity;
+            uow.Products.Update(prod);
+        }
+
+        //For the assignment we just delete or clear
+        uow.Orders.Delete(order);
+        uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
+
+        UpdateTotal();
+        NavManager.NavigateTo("/checkout");
     }
 
 
