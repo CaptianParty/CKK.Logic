@@ -16,7 +16,6 @@ namespace CKK.DB.Repository
     public class OrderRepository : IOrderRepository
     {
         private IConnectionFactory _connectionFactory;
-
         public OrderRepository(IConnectionFactory Conn)
         {
             _connectionFactory = Conn;
@@ -34,13 +33,13 @@ namespace CKK.DB.Repository
             }
         }
 
-        public int Delete(Order entity)
+        public int Delete(int entity)
         {
             string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
             using (IDbConnection connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
-                var result = connection.Execute(sql, entity);
+                var result = connection.Execute(sql, new { OrderId = entity });
                 return result;
             }
         }

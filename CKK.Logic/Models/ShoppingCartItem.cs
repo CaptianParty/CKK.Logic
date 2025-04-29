@@ -10,18 +10,18 @@ namespace CKK.Logic.Models
         public int ShoppingCartId { get; set; }
         public int CustomerId { get; set; }
         public int ProductId { get; set; }
-        public int quantity { get; set; }
+        public int _quantity { get; set; }
         public int Quantity
         {
             get
             {
-                return quantity;
+                return _quantity;
             }
             set
             {
                 if (value >= 0)
                 {
-                    quantity = value;
+                    _quantity = value;
                 }
                 else
                 {

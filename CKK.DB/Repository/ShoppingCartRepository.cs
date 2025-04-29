@@ -42,7 +42,7 @@ namespace CKK.DB.Repository
             {
                 ProductRepository _productRepository = new ProductRepository(_connectionFactory);
 
-                var item = _productRepository.GetByIdAsync(ProductId).Result;
+                var item = _productRepository.GetById(ProductId);
 
                 var ProductItems = GetProducts(ShoppingCardId).Find(x => x.ProductId == ProductId);
 
@@ -55,17 +55,22 @@ namespace CKK.DB.Repository
 
                 if (item.Quantity >= quantity)
                 {
+                    if (ProductItems != null)
+                    {
                     //Product already in cart so update quantity
-                    var test = _productRepository.UpdateAsync(ProductId, quantity);
-                }
-                else
-                {
-                    //New product for the cart so add it
-                    var test = _productRepository.AddAsync(ProductId, quantity);
+                    var test = UpdateAsync(shopitem);
+                    }
+
+                    else
+                    {
+                        //New product for the cart so add it
+                        var test = AddAsync(shopitem);
+                    }
                 }
                 return shopitem;
             }
         }
+        
 
         public int ClearCart(int shoppingCartId)
         {
@@ -90,15 +95,23 @@ namespace CKK.DB.Repository
 
         }
 
-        public decimal GetTotal(int ShoppingCartId)
+        public decimal GetTotal(int shoppingCartId)
         {
-            string sql = "SELECT SUM(Quantity) FROM ShoppingCartItems WHERE ShoppingCartId = @ShoppingCartId";
+            string sql = "SELECT SUM(items.Quantity * Price) FROM ShoppingCartItems items, Products prods WHERE items.ProductId = prods.Id AND ShoppingCartId = @ShoppingCartId";
+            decimal result;
             using (IDbConnection connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
-                var result = connection.QuerySingleOrDefault<decimal>(sql, new { ShoppingCartId = ShoppingCartId });
-                return result;
+                try
+                {
+                    result = connection.QuerySingleOrDefault<decimal>(sql, new { ShoppingCartId = shoppingCartId });
+                }
+                catch
+                {
+                    result = 0;
+                }
             }
+            return result;
         }
 
         public void Ordered(int shoppingCartId)
@@ -113,10 +126,34 @@ namespace CKK.DB.Repository
 
         public int Update(ShoppingCartItem entity)
         {
-            var sql = "UPDATE ShoppingCartItems(ShoppingCartId,ProductId,Quantity) SET VALUES ShoppingCartId = @ShoppingCartId, @ProductId," +
-                "@Quantity WHERE ShoppingCartId = @ShoppingCartId AND Product = @ProductId";
-            //var sql = "UPDATE ShoppingCartItems SET VLUE ShoppingCartId = @ShoppingCartId, ProductId = @ProductId," +
-            //    "Quantity = @Quantity WHERE ShoppingCartId = @ShoppingCartId AND Product = @ProductId";
+            string sql = @"
+    UPDATE ShoppingCartItems 
+    SET 
+        ShoppingCartId = @NewShoppingCartId, 
+        ProductId = @NewProductId, 
+        Quantity = @Quantity 
+    WHERE 
+        ProductId = @OldProductId 
+        AND ShoppingCartId = @OldShoppingCartId";
+
+            using (IDbConnection connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.Execute(sql, new
+                {
+                    NewShoppingCartId = entity.ShoppingCartId,
+                    NewProductId = entity.ProductId,
+                    Quantity = entity.Quantity,
+                    OldProductId = entity.ProductId,
+                    OldShoppingCartId = entity.ShoppingCartId
+                });
+                return result;
+            }
+        }
+
+        public int UpdateAsync(ShoppingCartItem entity)
+        {
+            var sql = "UPDATE ShoppingCartItems SET ShoppingCartId = @ShoppingCartId, ProductId = @ProductId, Quantity = @Quantity WHERE ShoppingCartId = @ShoppingCartId AND ProductId = @ProductId";
             using (var connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
@@ -124,5 +161,18 @@ namespace CKK.DB.Repository
                 return result;
             }
         }
+
+        public int AddAsync(ShoppingCartItem entity)
+        {
+            var sql = "Insert into ShoppingCartItems (ShoppingCartId,ProductId,Quantity) VALUES (@ShoppingCartId,@ProductId,@Quantity)";
+            using (var connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.Execute(sql, entity);
+                return result;
+            }
+        }
+
     }
 }
+

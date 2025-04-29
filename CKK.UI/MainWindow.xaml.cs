@@ -125,7 +125,8 @@ namespace CKK.UI
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        unitOfWork.Products.Delete(selected);
+                        //changed from selected to 1
+                        unitOfWork.Products.Delete(1);
                     }
                 }
                 RefreshList();
