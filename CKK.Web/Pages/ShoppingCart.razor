@@ -75,10 +75,11 @@ else
             Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
             prod.Quantity -= item.Quantity;
             uow.Products.Update(prod);
+            uow.Products.Delete(prod);
         }
 
         //For the assignment we just delete or clear
-        uow.Orders.Delete(1);
+        uow.Orders.Delete(order);
         uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
 
         statusMessage = "Order Placed Successfully";

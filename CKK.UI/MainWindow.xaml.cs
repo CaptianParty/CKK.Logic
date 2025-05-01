@@ -128,7 +128,7 @@ namespace CKK.UI
                     if (result == MessageBoxResult.Yes)
                     {
                         //changed from selected to 1
-                        unitOfWork.Products.Delete(1);
+                        unitOfWork.Products.Delete(selected);
                         //IMPLEMENTED WITH ALL NEW CODE
                         //unitOfWork.Products.Delete(selected);
 

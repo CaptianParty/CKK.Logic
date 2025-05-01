@@ -33,29 +33,29 @@ namespace CKK.DB.Repository
             }
         }
 
-        public int Delete(int entity)
-        {
-            string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
-            using (IDbConnection connection = _connectionFactory.GetConnection)
-            {
-                connection.Open();
-                var result = connection.Execute(sql, new { OrderId = entity });
-                return result;
-            }
-        }
-
-        //IMPLEMENTED NEW DELETE WORKS
-
-        //public int Delete(Order entity)
+        //public int Delete(int entity)
         //{
         //    string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
         //    using (IDbConnection connection = _connectionFactory.GetConnection)
         //    {
         //        connection.Open();
-        //        var result = connection.Execute(sql, new { OrderId = entity.OrderId });
+        //        var result = connection.Execute(sql, new { OrderId = entity });
         //        return result;
         //    }
         //}
+
+        //IMPLEMENTED NEW DELETE WORKS
+
+        public int Delete(Order entity)
+        {
+            string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
+            using (IDbConnection connection = _connectionFactory.GetConnection)
+            {
+                connection.Open();
+                var result = connection.Execute(sql, new { OrderId = entity.OrderId });
+                return result;
+            }
+        }
 
         public List<Order> GetAll()
         {
