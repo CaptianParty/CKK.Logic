@@ -114,12 +114,14 @@ namespace CKK.UI
 
         private void removeButton_Click(object sender, RoutedEventArgs e)
         {
+
             if (itemListView.SelectedItems.Count > 0)
             {
                 var selected = itemListView.SelectedItem as Product;
 
                 if (selected != null)
                 {
+
                     MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
                         "Are you sure?", MessageBoxButton.YesNo);
 
@@ -127,6 +129,9 @@ namespace CKK.UI
                     {
                         //changed from selected to 1
                         unitOfWork.Products.Delete(1);
+                        //IMPLEMENTED WITH ALL NEW CODE
+                        //unitOfWork.Products.Delete(selected);
+
                     }
                 }
                 RefreshList();

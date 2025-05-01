@@ -44,6 +44,19 @@ namespace CKK.DB.Repository
             }
         }
 
+        //IMPLEMENTED NEW DELETE WORKS
+
+        //public int Delete(Order entity)
+        //{
+        //    string sql = "DELETE FROM Orders WHERE OrderId = @OrderId";
+        //    using (IDbConnection connection = _connectionFactory.GetConnection)
+        //    {
+        //        connection.Open();
+        //        var result = connection.Execute(sql, new { OrderId = entity.OrderId });
+        //        return result;
+        //    }
+        //}
+
         public List<Order> GetAll()
         {
             string sql = "SELECT * FROM Orders";

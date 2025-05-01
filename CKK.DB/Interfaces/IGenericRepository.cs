@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CKK.Logic.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,10 @@ namespace CKK.DB.Interfaces
         List<TRepo> GetAll();
         int Add(TRepo entity);
         int Update(TRepo entity);
-        int Delete(int id); 
+        int Delete(int id);
+        
+        //IMPLEMENTED NEW CODE THAT I ADDED/CHANGED
+        //int Delete(TRepo id);
     }
-    
+
 }

@@ -31,15 +31,32 @@ namespace CKK.DB.Repository
         }
 
 
+
         public int Delete(int id)
         {
             var sql = "DELETE FROM Products WHERE Id = @Id";
             using (var connection = _connectionFactory.GetConnection)
             {
                 connection.Open();
-                return connection.Execute(sql, new { Id = id});
+                return connection.Execute(sql, new { Id = id });
             }
         }
+
+        //IMPLEMENTED NEW DELETE WORKS
+        //public int Delete(Product entity)
+        //{
+
+        //    if (entity != null)
+        //    {
+        //        var sql = "DELETE FROM Products WHERE Id = @Id";
+        //        using (var connection = _connectionFactory.GetConnection)
+        //        {
+        //            connection.Open();
+        //            return connection.Execute(sql, new { Id = entity.Id });
+        //        }
+        //    }
+        //    return 0;
+        //}
 
         public List<Product> GetAll()
         {
@@ -120,5 +137,17 @@ namespace CKK.DB.Repository
                 return result;
             }
         }
+
+        //NEW CODE
+        //public List<Product> GetActiveProducts()
+        //{
+        //    var sql = "SELECT * FROM Products WHERE Quantity > 0 AND IsActive = 1 ";
+        //    using (var connection = _connectionFactory.GetConnection)
+        //    {
+        //        connection.Open();
+        //        return connection.Query<Product>(sql).ToList();
+        //    }
+        //}
+
     }
 }
