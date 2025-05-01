@@ -109,6 +109,16 @@ namespace CKK.UI
             priceTextBox.Clear();
             quantityTextBox.Clear();
 
+            //IMPLEMENTED NEW CODE WORKS
+            if (itemListView.View is GridView gridView)
+            {
+                foreach (var column in gridView.Columns)
+                {
+                    column.Width = 0; // Reset width
+                    column.Width = double.NaN; // Auto-size to content
+                }
+            }
+
         }
 
 
@@ -129,6 +139,7 @@ namespace CKK.UI
                     {
                         //changed from selected to 1
                         unitOfWork.Products.Delete(selected);
+
                         //IMPLEMENTED WITH ALL NEW CODE
                         //unitOfWork.Products.Delete(selected);
 
@@ -163,18 +174,60 @@ namespace CKK.UI
                     var product = unitOfWork.Products.GetById(selected.Id);
                     EditItem editItem = new EditItem(connectionFactory, product);
                     editItem.ShowDialog();
+
+                    RefreshList();
+
+                    //IMPLEMENTED NEW CODE WORKS
+                    if (itemListView.View is GridView gridView)
+                    {
+                        foreach (var column in gridView.Columns)
+                        {
+                            column.Width = 0; // Reset width
+                            column.Width = double.NaN; // Auto-size to content
+                        }
+                    }
+
                 }
-                RefreshList();
 
-            }
-           
-         
-            else
-            {
-                MessageBox.Show("Please select an item to edit.");
-                return;
-            }
+                //NEW CODE WORKING ON IT FIGURING OUT HOW TO MAKE THE INVENTORYLISTBOX WORK WHEN AN ITEM IS SELECTED TO EDIT
 
+                if (inventoryListBox.SelectedItems.Count > 0)
+                {
+                    var selectedItem = inventoryListBox.SelectedItem as Product;
+
+                    if (selectedItem != null)
+                    {
+                        // Retrieve the product from the database
+                        var product = unitOfWork.Products.GetById(selectedItem.Id);
+
+                        // Open the EditItem dialog
+                        EditItem editItem = new EditItem(connectionFactory, product);
+                        editItem.ShowDialog();
+
+                        // Refresh the list after editing
+                        RefreshList();
+
+                        // Resize the columns in the itemListView
+                        if (itemListView.View is GridView gridView)
+                        {
+                            foreach (var column in gridView.Columns)
+                            {
+                                column.Width = 0; // Reset width
+                                column.Width = double.NaN; // Auto-size to content
+                            }
+                        }
+                    }
+
+
+                    else
+                    {
+                        MessageBox.Show("Please select an item to edit.");
+                        return;
+                    }
+
+
+                }
+            }
         }
 
         private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)

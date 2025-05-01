@@ -35,6 +35,8 @@ else
 
                     </div>
                 </div>
+
+
             }
         </div>
         <p>The CheckOut button removes inventory based on your shopping cart and deletes your order and shopping card.</p>
@@ -73,9 +75,14 @@ else
         foreach (var item in cartItems)
         {
             Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
+
             prod.Quantity -= item.Quantity;
             uow.Products.Update(prod);
-            uow.Products.Delete(prod);
+
+            if(prod.Quantity == 0)
+            {
+                uow.Products.Delete(prod);
+            }
         }
 
         //For the assignment we just delete or clear

@@ -138,7 +138,8 @@ namespace CKK.DB.Repository
             }
         }
 
-        //NEW CODE
+        //NEW CODE NEED TO MAKE WORK
+
         //public List<Product> GetActiveProducts()
         //{
         //    var sql = "SELECT * FROM Products WHERE Quantity > 0 AND IsActive = 1 ";
