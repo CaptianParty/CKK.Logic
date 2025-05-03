@@ -58,11 +58,17 @@ namespace CKK.UI
             var allProducts = products.GetAll();
             productList = allProducts;
             itemListView.ItemsSource = productList;
+        }
 
+        private void RefreshInventory()
+        {
+            unitOfWork.Products.GetAll();
+            var allProducts = products.GetAll();
+            productList = allProducts;
+            inventoryListBox.ItemsSource = productList;
         }
 
         //FIXED
-
         private void RefreshListByName()
         {
 
@@ -71,7 +77,6 @@ namespace CKK.UI
                 var orderedByName = unitOfWork.Products.GetAll().OrderBy(p => p.Name).ToList();
 
                 itemListView.ItemsSource = orderedByName;
-
             }
 
             if (idRadioButton != null && idRadioButton.IsChecked == true)
@@ -80,12 +85,7 @@ namespace CKK.UI
 
                 itemListView.ItemsSource = orderecById;
             }
-
         }
-
-
-
-
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
@@ -118,36 +118,48 @@ namespace CKK.UI
                     column.Width = double.NaN; // Auto-size to content
                 }
             }
-
         }
-
 
         private void removeButton_Click(object sender, RoutedEventArgs e)
         {
+            var selected = itemListView.SelectedItem as Product;
+            var selectedProd = inventoryListBox.SelectedItem as Product;
 
-            if (itemListView.SelectedItems.Count > 0)
+            if (itemListView.SelectedItems.Count == 0 && inventoryListBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select an item to delete.");
+                    return;
+                }
+            
+            try
             {
-                var selected = itemListView.SelectedItem as Product;
-
                 if (selected != null)
                 {
-
                     MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
                         "Are you sure?", MessageBoxButton.YesNo);
-
+                    
                     if (result == MessageBoxResult.Yes)
                     {
-                        //changed from selected to 1
                         unitOfWork.Products.Delete(selected);
-
-                        //IMPLEMENTED WITH ALL NEW CODE
-                        //unitOfWork.Products.Delete(selected);
-
+                        RefreshList();
                     }
                 }
-                RefreshList();
+                else if (selectedProd != null)
+                {
+                    MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
+                        "Are you sure?", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        unitOfWork.Products.Delete(selectedProd);
+                        RefreshInventory();
+                    }
+                }
+                    
             }
-
+            finally 
+            {
+                
+            }
         }
 
         private void numberTextBox_PreviewTextInput(object sender,
@@ -164,10 +176,10 @@ namespace CKK.UI
         //FIXED
         private void editButton_Click(object sender, RoutedEventArgs e)
         {
+            var selected = itemListView.SelectedItem as Product;
 
             if (itemListView.SelectedItems.Count > 0)
             {
-                var selected = itemListView.SelectedItem as Product;
 
                 if (selected != null)
                 {
@@ -189,70 +201,49 @@ namespace CKK.UI
 
                 }
 
-                //NEW CODE WORKING ON IT FIGURING OUT HOW TO MAKE THE INVENTORYLISTBOX WORK WHEN AN ITEM IS SELECTED TO EDIT
+            }
+            //NEW CODE WORKING ON IT FIGURING OUT HOW TO MAKE THE INVENTORYLISTBOX WORK WHEN AN ITEM IS SELECTED TO EDIT
 
-                if (inventoryListBox.SelectedItems.Count > 0)
+            else if (inventoryListBox.SelectedItem is Product inventorySelected)
+            {
+                var product = unitOfWork.Products.GetById(inventorySelected.Id);
+                EditItem editItem = new EditItem(connectionFactory, product);
+                editItem.ShowDialog();
+
+                RefreshInventory();
+                RefreshList();
+
+                if (itemListView.View is GridView gridView)
                 {
-                    var selectedItem = inventoryListBox.SelectedItem as Product;
-
-                    if (selectedItem != null)
+                    foreach (var column in gridView.Columns)
                     {
-                        // Retrieve the product from the database
-                        var product = unitOfWork.Products.GetById(selectedItem.Id);
-
-                        // Open the EditItem dialog
-                        EditItem editItem = new EditItem(connectionFactory, product);
-                        editItem.ShowDialog();
-
-                        // Refresh the list after editing
-                        RefreshList();
-
-                        // Resize the columns in the itemListView
-                        if (itemListView.View is GridView gridView)
-                        {
-                            foreach (var column in gridView.Columns)
-                            {
-                                column.Width = 0; // Reset width
-                                column.Width = double.NaN; // Auto-size to content
-                            }
-                        }
+                        column.Width = 0; // Reset width
+                        column.Width = double.NaN; // Auto-size to content
                     }
-
-
-                    else
-                    {
-                        MessageBox.Show("Please select an item to edit.");
-                        return;
-                    }
-
-
                 }
+            }
+
+            else
+            {
+                MessageBox.Show("Please select an item to edit.");
+                return;
             }
         }
 
         private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (searchTextBox.Text == "")
+            if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
                 RefreshList();
-                inventoryListBox.Items.Clear();
+                inventoryListBox.ItemsSource = null; // Clear the list
             }
-
             else
             {
-                inventoryListBox.Items.Clear();
+                var filteredProducts = products.GetAll()
+                    .Where(item => item.Name.IndexOf(searchTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
 
-                foreach (var item in products.GetAll())
-                {
-                    if (item.Name.IndexOf(searchTextBox.Text,
-                        StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        inventoryListBox.Items.Add($"Id number: {item.Id}," +
-                            $"\nName: {item.Name}, " +
-                            $"\nPrice: ${item.Price}," +
-                            $"\nQuantity: {item.Quantity},\n");
-                    }
-                }
+                inventoryListBox.ItemsSource = filteredProducts; // Bind the list to Product objects
 
             }
         }
@@ -273,5 +264,7 @@ namespace CKK.UI
         {
             RefreshList();
         }
+
+        
     }
 }

@@ -103,14 +103,10 @@ else
 
     protected void spinnerChange(int productId, object value)
     {
-        //Add to Cart
-        // if(productId <= 0 || value == null)
-        // {
-        //     return;
-        // }
-
         var Item = uow.ShoppingCarts.AddToCart(order.ShoppingCartId, productId, Convert.ToInt16(value));
         UpdateTotal();
+
+
     }
 }
 

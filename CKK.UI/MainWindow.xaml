@@ -81,9 +81,19 @@
             <ListBox FontSize="15" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" 
                      Height="200" Grid.Column="2" Grid.ColumnSpan="4" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                 ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding ElementName=searchTextBox, Mode=OneWay}"
-                     
-                 />
+                 ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text= "{Binding Id, StringFormat='Id: {0}'}"/>
+                            <TextBlock Text="{Binding Name, StringFormat='Name: {0}'}"/>
+                            <TextBlock Text="{Binding Price, StringFormat='Price: {0:C}'}"/>
+                            <TextBlock Text="{Binding Quantity, StringFormat='Quantity: {0}'}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
 
             <ListView x:Name="itemListView" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" 
                       Grid.RowSpan="4" Height="200" Width="auto">
