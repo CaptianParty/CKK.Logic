@@ -58,6 +58,7 @@ else
             order = uow.Orders.GetById(1);
             if (order == null) //Make new order when no active orders found
             {
+                //WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
                 Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
                 order = newOrder;
                 uow.Orders.Add(newOrder);

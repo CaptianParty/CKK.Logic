@@ -1,5 +1,6 @@
 ﻿using CKK.Logic.Exceptions;
 
+//DONT THINK I NEED THE INTERFACES IN CKK.LOGIC AT ALL
 namespace CKK.Logic.Interfaces
 {
     [Serializable]
