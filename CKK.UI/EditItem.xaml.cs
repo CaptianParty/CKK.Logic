@@ -65,7 +65,6 @@ namespace CKK.UI
 
      
 
-        //FIXME: WHEN YOU CLICK SAVE IT DOESNT UPDATE THE PRODUCT
         private void btSave_Click(object sender, RoutedEventArgs e)
         {
             if (nameTextBox.Text == "" || priceTextBox.Text == "" || quantityTextBox.Text == "")
@@ -73,6 +72,7 @@ namespace CKK.UI
                 MessageBox.Show("Please fill in all fields");
                 return;
             }
+            
             else
             {
                 product.Name = nameTextBox.Text;
@@ -93,19 +93,13 @@ namespace CKK.UI
             
         }
 
-        private void NameTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+      
 
         private void btCancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
         }
 
-        private void btSave_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-
-        }
+       
     }
 }

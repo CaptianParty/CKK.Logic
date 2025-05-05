@@ -41,7 +41,9 @@ else
         </div>
         <p>The CheckOut button removes inventory based on your shopping cart and deletes your order and shopping card.</p>
     </form>
-    <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success btn-lg btn-block">@checkoutTotal</a>
+    <div >
+        <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
+    </div>
 }
 
 
@@ -106,7 +108,6 @@ else
     {
         var Item = uow.ShoppingCarts.AddToCart(order.ShoppingCartId, productId, Convert.ToInt16(value));
         UpdateTotal();
-
 
     }
 }

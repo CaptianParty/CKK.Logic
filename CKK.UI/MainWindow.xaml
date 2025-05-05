@@ -79,7 +79,7 @@
 
             <!--LIST BOX-->
             <ListBox FontSize="15" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" 
-                     Height="200" Grid.Column="2" Grid.ColumnSpan="4" 
+                     Height="200" Width="auto" Grid.Column="2" Grid.ColumnSpan="4" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                  ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding}">
                 <ListBox.ItemTemplate>

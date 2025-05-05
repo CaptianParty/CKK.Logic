@@ -7,35 +7,15 @@
         mc:Ignorable="d"
         Title="LoginWPF" Height="450" Width="800">
     <Grid>
-        <!--<Grid.RowDefinitions >
-            
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="10"/>
-
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
-
-        </Grid.ColumnDefinitions> -->
-
-
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Label Margin="3" VerticalAlignment="Center" >Username: </Label>
-            <TextBox Margin="3" Width="100" VerticalAlignment="Center"/>
+            <Label Margin="3" VerticalAlignment="Center" Content="Username:" />
+            <TextBox x:Name="usernameTextBox" Margin="3" Width="100" VerticalAlignment="Center" RenderTransformOrigin="1.185,1.395"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" RenderTransformOrigin="1.307,0.407">
             <Label Content="Password:" VerticalAlignment="Center" Margin="6 ,50 ,0, 0"/>
-            <PasswordBox Margin="6, 50, 0, 0" Width="100" VerticalAlignment="Center"/>
+            <PasswordBox x:Name="passwordBox" Margin="6, 50, 0, 0" Width="100" VerticalAlignment="Center" Password="password"
+                         />
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 50">

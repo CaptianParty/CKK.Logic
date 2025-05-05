@@ -34,9 +34,9 @@ namespace CKK.UI
             InitializeComponent();
 
 
-
             LoginWPF login = new LoginWPF();
             login.ShowDialog();
+
             if (login.DialogResult == true)
             {
                 unitOfWork.Products.GetAll();
@@ -48,6 +48,7 @@ namespace CKK.UI
                 this.Close();
             }
             RefreshList();
+            
 
 
         }
@@ -122,7 +123,7 @@ namespace CKK.UI
 
         private void removeButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = itemListView.SelectedItem as Product;
+            //var selected = itemListView.SelectedItem as Product;
             var selectedProd = inventoryListBox.SelectedItem as Product;
 
             if (itemListView.SelectedItems.Count == 0 && inventoryListBox.SelectedItem == null)
@@ -133,25 +134,27 @@ namespace CKK.UI
             
             try
             {
-                if (selected != null)
-                {
-                    MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
-                        "Are you sure?", MessageBoxButton.YesNo);
+                //if (selected != null)
+                //{
+                //    MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
+                //        "Are you sure?", MessageBoxButton.YesNo);
                     
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        unitOfWork.Products.Delete(selected);
-                        RefreshList();
-                    }
-                }
-                else if (selectedProd != null)
+                //    if (result == MessageBoxResult.Yes)
+                //    {
+                //        unitOfWork.Products.Delete(selected);
+                //        RefreshList();
+                //    }
+                //}
+                if (selectedProd != null)
                 {
                     MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
                         "Are you sure?", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
                         unitOfWork.Products.Delete(selectedProd);
-                        RefreshInventory();
+                        RefreshList();
+
+                        searchTextBox.Clear();
                     }
                 }
                     
@@ -161,6 +164,8 @@ namespace CKK.UI
                 
             }
         }
+
+        //WOULD LIKE TO ADD A RESET BUTTON FOR THE ADD THE TEXT BOXES ON ADD BUTTON.
 
         private void numberTextBox_PreviewTextInput(object sender,
             System.Windows.Input.TextCompositionEventArgs e)
@@ -176,42 +181,63 @@ namespace CKK.UI
         //FIXED
         private void editButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = itemListView.SelectedItem as Product;
+            //var selected = itemListView.SelectedItem as Product;
+            
+            //if (itemListView.SelectedItems.Count > 0 && inventoryListBox.SelectedItem != null)
+            //{
+            //    MessageBox.Show("Please only select one item");
 
-            if (itemListView.SelectedItems.Count > 0)
-            {
+            //    itemListView.SelectedItem = null;
+            //    inventoryListBox.SelectedItem = null;
+            //}
+            
+            //else if (itemListView.SelectedItems.Count > 0)
+            //{
 
-                if (selected != null)
-                {
-                    var product = unitOfWork.Products.GetById(selected.Id);
-                    EditItem editItem = new EditItem(connectionFactory, product);
-                    editItem.ShowDialog();
+            //    if (selected != null)
+            //    {
+            //        var product = unitOfWork.Products.GetById(selected.Id);
+            //        EditItem editItem = new EditItem(connectionFactory, product);
+            //       if (editItem.ShowDialog() == true)
+            //        {
+            //            if (searchTextBox.Text != "")
+            //            {
+            //                searchTextBox.Clear();
+            //                RefreshList();
+            //            }
+            //            RefreshList();
+            //        }
 
-                    RefreshList();
 
-                    //IMPLEMENTED NEW CODE WORKS
-                    if (itemListView.View is GridView gridView)
-                    {
-                        foreach (var column in gridView.Columns)
-                        {
-                            column.Width = 0; // Reset width
-                            column.Width = double.NaN; // Auto-size to content
-                        }
-                    }
 
-                }
 
-            }
-            //NEW CODE WORKING ON IT FIGURING OUT HOW TO MAKE THE INVENTORYLISTBOX WORK WHEN AN ITEM IS SELECTED TO EDIT
+            //        //IMPLEMENTED NEW CODE WORKS
+            //        if (itemListView.View is GridView gridView)
+            //        {
+            //            foreach (var column in gridView.Columns)
+            //            {
+            //                column.Width = 0; // Reset width
+            //                column.Width = double.NaN; // Auto-size to content
+            //            }
+            //        }
 
-            else if (inventoryListBox.SelectedItem is Product inventorySelected)
+            //    }
+
+            //}
+
+            if (inventoryListBox.SelectedItem is Product inventorySelected)
             {
                 var product = unitOfWork.Products.GetById(inventorySelected.Id);
                 EditItem editItem = new EditItem(connectionFactory, product);
-                editItem.ShowDialog();
+                if(editItem.ShowDialog() == true)
+                {
+                    if (searchTextBox.Text != "")
+                    {
+                        searchTextBox.Clear();
+                    }
+                    RefreshList();
 
-                RefreshInventory();
-                RefreshList();
+                }
 
                 if (itemListView.View is GridView gridView)
                 {
@@ -223,15 +249,20 @@ namespace CKK.UI
                 }
             }
 
+            
             else
             {
-                MessageBox.Show("Please select an item to edit.");
-                return;
+                if(/*itemListView.SelectedItems.Count ==0 && */inventoryListBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select an item to edit");
+                }
             }
+
         }
 
+
         private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
+       {
             if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
                 RefreshList();
