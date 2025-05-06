@@ -81,7 +81,7 @@
             <ListBox FontSize="15" x:Name="inventoryListBox" Grid.Row="2" Grid.RowSpan="4" 
                      Height="200" Width="auto" Grid.Column="2" Grid.ColumnSpan="4" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                 ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding}">
+                 ScrollViewer.CanContentScroll="False" Margin="242,19,508,17" ItemsSource="{Binding}" SelectionChanged="Selected_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
@@ -96,7 +96,7 @@
 
 
             <ListView x:Name="itemListView" Grid.Column="5" Grid.Row="2" Margin="523,7,29,6" 
-                      Grid.RowSpan="4" Height="200" Width="auto">
+                      Grid.RowSpan="4" Height="200" Width="auto" SelectionChanged="Selected_SelectionChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Id" Width="auto" DisplayMemberBinding="{Binding Id}"/>

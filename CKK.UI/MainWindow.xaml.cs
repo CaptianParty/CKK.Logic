@@ -48,9 +48,6 @@ namespace CKK.UI
                 this.Close();
             }
             RefreshList();
-            
-
-
         }
 
         private void RefreshList()
@@ -59,14 +56,6 @@ namespace CKK.UI
             var allProducts = products.GetAll();
             productList = allProducts;
             itemListView.ItemsSource = productList;
-        }
-
-        private void RefreshInventory()
-        {
-            unitOfWork.Products.GetAll();
-            var allProducts = products.GetAll();
-            productList = allProducts;
-            inventoryListBox.ItemsSource = productList;
         }
 
         //FIXED
@@ -87,6 +76,7 @@ namespace CKK.UI
                 itemListView.ItemsSource = orderecById;
             }
         }
+
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
@@ -110,7 +100,6 @@ namespace CKK.UI
             priceTextBox.Clear();
             quantityTextBox.Clear();
 
-            //IMPLEMENTED NEW CODE WORKS
             if (itemListView.View is GridView gridView)
             {
                 foreach (var column in gridView.Columns)
@@ -123,31 +112,31 @@ namespace CKK.UI
 
         private void removeButton_Click(object sender, RoutedEventArgs e)
         {
-            //var selected = itemListView.SelectedItem as Product;
+            var selected = itemListView.SelectedItem as Product;
             var selectedProd = inventoryListBox.SelectedItem as Product;
 
             if (itemListView.SelectedItems.Count == 0 && inventoryListBox.SelectedItem == null)
-                {
-                    MessageBox.Show("Please select an item to delete.");
-                    return;
-                }
-            
-            try
             {
-                //if (selected != null)
-                //{
-                //    MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
-                //        "Are you sure?", MessageBoxButton.YesNo);
-                    
-                //    if (result == MessageBoxResult.Yes)
-                //    {
-                //        unitOfWork.Products.Delete(selected);
-                //        RefreshList();
-                //    }
-                //}
-                if (selectedProd != null)
+                MessageBox.Show("Please select an item to delete.");
+                return;
+            }
+  
+                else if (selected != null)
                 {
-                    MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to delete this item?",
+                    MessageBoxResult result = MessageBox.Show(this, $"Are you sure you want to delete: {selected.Name}",
+                        "Are you sure?", MessageBoxButton.YesNo);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        unitOfWork.Products.Delete(selected);
+                        RefreshList();
+
+                        searchTextBox.Clear();
+                    }
+                }
+                else if (selectedProd != null)
+                {
+                    MessageBoxResult result = MessageBox.Show(this, $"Are you sure you want to delete: {selectedProd.Name}",
                         "Are you sure?", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
@@ -157,12 +146,7 @@ namespace CKK.UI
                         searchTextBox.Clear();
                     }
                 }
-                    
-            }
-            finally 
-            {
                 
-            }
         }
 
         //WOULD LIKE TO ADD A RESET BUTTON FOR THE ADD THE TEXT BOXES ON ADD BUTTON.
@@ -181,50 +165,6 @@ namespace CKK.UI
         //FIXED
         private void editButton_Click(object sender, RoutedEventArgs e)
         {
-            //var selected = itemListView.SelectedItem as Product;
-            
-            //if (itemListView.SelectedItems.Count > 0 && inventoryListBox.SelectedItem != null)
-            //{
-            //    MessageBox.Show("Please only select one item");
-
-            //    itemListView.SelectedItem = null;
-            //    inventoryListBox.SelectedItem = null;
-            //}
-            
-            //else if (itemListView.SelectedItems.Count > 0)
-            //{
-
-            //    if (selected != null)
-            //    {
-            //        var product = unitOfWork.Products.GetById(selected.Id);
-            //        EditItem editItem = new EditItem(connectionFactory, product);
-            //       if (editItem.ShowDialog() == true)
-            //        {
-            //            if (searchTextBox.Text != "")
-            //            {
-            //                searchTextBox.Clear();
-            //                RefreshList();
-            //            }
-            //            RefreshList();
-            //        }
-
-
-
-
-            //        //IMPLEMENTED NEW CODE WORKS
-            //        if (itemListView.View is GridView gridView)
-            //        {
-            //            foreach (var column in gridView.Columns)
-            //            {
-            //                column.Width = 0; // Reset width
-            //                column.Width = double.NaN; // Auto-size to content
-            //            }
-            //        }
-
-            //    }
-
-            //}
-
             if (inventoryListBox.SelectedItem is Product inventorySelected)
             {
                 var product = unitOfWork.Products.GetById(inventorySelected.Id);
@@ -243,8 +183,8 @@ namespace CKK.UI
                 {
                     foreach (var column in gridView.Columns)
                     {
-                        column.Width = 0; // Reset width
-                        column.Width = double.NaN; // Auto-size to content
+                        column.Width = 0; 
+                        column.Width = double.NaN; 
                     }
                 }
             }
@@ -252,7 +192,7 @@ namespace CKK.UI
             
             else
             {
-                if(/*itemListView.SelectedItems.Count ==0 && */inventoryListBox.SelectedItem == null)
+                if(inventoryListBox.SelectedItem == null)
                 {
                     MessageBox.Show("Please select an item to edit");
                 }
@@ -266,7 +206,7 @@ namespace CKK.UI
             if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
                 RefreshList();
-                inventoryListBox.ItemsSource = null; // Clear the list
+                inventoryListBox.ItemsSource = null;
             }
             else
             {
@@ -274,7 +214,7 @@ namespace CKK.UI
                     .Where(item => item.Name.IndexOf(searchTextBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
                     .ToList();
 
-                inventoryListBox.ItemsSource = filteredProducts; // Bind the list to Product objects
+                inventoryListBox.ItemsSource = filteredProducts; 
 
             }
         }
@@ -296,6 +236,17 @@ namespace CKK.UI
             RefreshList();
         }
 
-        
+        //ADDED NEW CODE
+        private void Selected_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(inventoryListBox.SelectedItem != null)
+            {
+                itemListView.SelectedItem = null;
+            }
+            else
+            {
+                inventoryListBox.SelectedItem = null;
+            }
+        }
     }
 }
