@@ -90,7 +90,14 @@ namespace CKK.UI
             }
             newProd.Name = nameTextBox.Text;
             newProd.Price = decimal.Parse(priceTextBox.Text);
+
+            if (!int.TryParse(quantityTextBox.Text, out int quantity))
+            {
+                MessageBox.Show("Please enter a valid whole number for quantity.");
+                return;
+            }
             newProd.Quantity = int.Parse(quantityTextBox.Text);
+            
 
             unitOfWork.Products.Add(newProd);
 
@@ -165,10 +172,34 @@ namespace CKK.UI
         //FIXED
         private void editButton_Click(object sender, RoutedEventArgs e)
         {
-            if (inventoryListBox.SelectedItem is Product inventorySelected)
+            if (inventoryListBox.SelectedItem is null && itemListView.SelectedItem == null)
+            {
+                MessageBox.Show("Please select an item to edit");
+            }
+
+            else if (itemListView.SelectedItem != null)
+            {
+                if (itemListView.SelectedItem is Product inventorySelected)
+                {
+                    var product = unitOfWork.Products.GetById(inventorySelected.Id);
+                    EditItem editInventory = new EditItem(connectionFactory, product);
+                    if(editInventory.ShowDialog() == true)
+                    {
+                        if (searchTextBox.Text != "")
+                        {
+                            searchTextBox.Clear();
+                        }
+
+                        RefreshList();
+                    }
+                }
+            }
+        
+
+            else if (inventoryListBox.SelectedItem is Product inventorySelected)
             {
                 var product = unitOfWork.Products.GetById(inventorySelected.Id);
-                EditItem editItem = new EditItem(connectionFactory, product);
+        EditItem editItem = new EditItem(connectionFactory, product);
                 if(editItem.ShowDialog() == true)
                 {
                     if (searchTextBox.Text != "")
@@ -177,7 +208,7 @@ namespace CKK.UI
                     }
                     RefreshList();
 
-                }
+    }
 
                 if (itemListView.View is GridView gridView)
                 {
@@ -190,13 +221,13 @@ namespace CKK.UI
             }
 
             
-            else
-            {
-                if(inventoryListBox.SelectedItem == null)
-                {
-                    MessageBox.Show("Please select an item to edit");
-                }
-            }
+            //else
+            //{
+            //    if(inventoryListBox.SelectedItem == null)
+            //    {
+            //        MessageBox.Show("Please select an item to edit");
+            //    }
+            //}
 
         }
 
@@ -239,11 +270,11 @@ namespace CKK.UI
         //ADDED NEW CODE
         private void Selected_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(inventoryListBox.SelectedItem != null)
+            if (sender == inventoryListBox && inventoryListBox.SelectedItem != null)
             {
                 itemListView.SelectedItem = null;
             }
-            else
+            else if (sender == itemListView && itemListView.SelectedItem != null)
             {
                 inventoryListBox.SelectedItem = null;
             }
