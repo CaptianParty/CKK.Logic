@@ -1,0 +1,196 @@
+﻿@page "/Cart"
+ @page "/Cart/{shoppingCartId:int}"
+
+@using CKK.Logic.Models
+@using CKK.DB.UOW
+@using CKK.DB.Interfaces
+@using CKK.Persistance.Models
+@using CKK.DB.Repository
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+<!--ADD AT SIGN implements IDisposable -->
+
+<h3>Cart</h3>
+
+<div style="display: flex; flex-direction: column; min-height: 80vh;">
+    <div>
+    <h4>Items in your cart:</h4>
+    <ul>
+        @if (order != null)
+        {
+            var cartItems = uow.ShoppingCarts.GetProducts(shoppingCartId);
+
+            if(cartItems == null || !cartItems.Any(i => i.Quantity > 0))
+            {
+                cartMessage = "Your cart is empty. Please add items before checking out.";
+            }
+
+            if (cartItems != null && cartItems.Any())
+            {
+            @foreach (var cartItem in cartItems.Where(i => i.Quantity > 0))
+                {
+                    var item = uow.Products.GetAll().FirstOrDefault(p => p.Id == cartItem.ProductId);
+                    if (item != null)
+                    {
+                        <li>
+                            @item.Name - @cartItem.Quantity : @item.Price.ToString("c")
+                            <span class="ms-2 text-muted">
+                                =@(cartItem.Quantity * item.Price).ToString("c")
+                            </span>
+                            <div>
+                                <button class="btn btn-secondary btn-sm me-2" @onclick="() => DecrementQuantity(cartItem.ProductId)">-</button>
+                                <a class="btn btn-red float-lg-end" @onclick="() => DeleteFromCart(cartItem.ProductId)">Remove</a>
+                            </div>
+                        </li>
+                    }
+                }
+            }
+        }
+    </ul>
+    @if(order != null)
+    {
+        var cartItems= uow.ShoppingCarts.GetProducts(shoppingCartId);
+        var cartTotal = cartItems?.Where(i => i.Quantity > 0)
+        .Sum(i => {
+            var prod  = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId);
+            return prod != null ? i.Quantity * prod.Price : 0;
+        }) ?? 0;
+
+        <div class="mt-3 fw-bold">
+            Cart Total: @cartTotal.ToString("c")
+        </div>
+    }
+
+    </div>
+    <div style="margin-top: auto;">
+        <div id="Info" @onclick="FinishPayment" class="btn btn-success float-end"> Finish</div> 
+    </div> 
+
+</div>
+
+@code {
+    //FILE STORING NEEDS TO BE ADDED HERE
+
+    [Inject]
+    private IUnitOfWork uow { get; set; } = null!;
+    [Parameter]
+    public int shoppingCartId { get; set; }
+
+    FileStoring fileStore = new FileStoring();
+    public Product product;
+    private Order order;
+    private string? cartMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //BELIEVE THIS IS WHERE THE FILE STORING NEEDS TO GO
+
+        // if (uow != null) Valid uow
+        // {
+        //     order = uow.Orders.GetById(1);
+        //     if (order == null)
+        //     {
+        //         WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
+        //         Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
+        //         order = newOrder;
+        //         uow.Orders.Add(newOrder);
+        //     }
+        // }
+
+
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (uow != null)
+        {
+            order = uow.Orders.GetById(1);
+            if (order == null)
+            {
+                //WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
+                Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
+                order = newOrder;
+                uow.Orders.Add(newOrder);
+
+            }
+        }
+    }
+
+    protected async Task FinishPayment()
+    {
+        if (FinishPayment != null)
+        {
+
+            var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+            var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
+
+            if (cartItems == null || !cartItems.Any() || total == 0)
+            {
+                await ShowAlert("Your cart is empty. Please add items before checking out");
+                StateHasChanged();
+                return;
+            }
+
+            var inventory = uow.Products.GetAll();
+
+            foreach (var item in cartItems)
+            {
+                Product? prod = inventory.FirstOrDefault(x => x.Id == item.ProductId);
+
+                if (prod != null && prod.Quantity == 0)
+                {
+                    uow.Products.Delete(prod);
+                }
+            }
+
+            NavManager.NavigateTo($"/Info/{order.ShoppingCartId}");
+        }
+    }
+
+    private void DeleteFromCart(int productId)
+    {
+        if(order!=null)
+        {
+            var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+            var itemToRemove = cartItems.FirstOrDefault(i => i.ProductId == productId);
+            if(itemToRemove != null)
+            {
+                uow.ShoppingCarts.Update(new ShoppingCartItem
+                {
+                    ShoppingCartId=order.ShoppingCartId,
+                    ProductId = productId,
+                    Quantity = 0,
+                });
+            }
+                    StateHasChanged();
+        }
+    }
+
+    private void DecrementQuantity(int productId)
+    {
+        if(order != null)
+        {
+            var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        var item = cartItems.FirstOrDefault(i => i.ProductId == productId);
+        if (item != null && item.Quantity > 1)
+        {
+            item.Quantity -= 1;
+            uow.ShoppingCarts.Update(item);
+        }
+        else if (item != null && item.Quantity == 1)
+        {
+            DeleteFromCart(productId);
+            return;
+        }
+        StateHasChanged();
+        }
+    }
+
+    private async Task ShowAlert(string alert)
+    {
+        await JS.InvokeVoidAsync("alert", alert);
+    }
+}

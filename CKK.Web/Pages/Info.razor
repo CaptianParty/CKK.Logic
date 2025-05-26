@@ -1,0 +1,128 @@
+﻿@page "/Info"
+ @page "/Info/{shoppingCartId:int}"
+
+@using CKK.Logic.Models
+@using CKK.DB.UOW
+@using CKK.DB.Interfaces
+@inject NavigationManager NavManager
+
+
+
+<!--MAKE ALL FIELDS REQUIRED-->
+<div class="container-fluid">
+    <EditForm Model="@userAddress">
+        <address>
+            <div>
+                <label>Street:</label>
+                <InputText @bind-Value="userAddress.Street" class="form-control"/>
+            </div>
+            <div>
+                <label>City:</label>
+                <InputText @bind-Value="userAddress.City" class="form-control"/>
+            </div>
+            <div>
+                <label>State:</label>
+                <InputText @bind-Value="userAddress.State" class="form-control" />
+            </div>
+            <div>
+                <label>Zip:</label>
+                <InputText @bind-Value="userAddress.Zip" class="form-control"/>
+               
+                
+            </div>
+        </address>
+    </EditForm>
+
+    <EditForm Model="@paymentInfo" OnValidSubmit="FinishPayment">
+
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="paymentInfo.Name" class="form-control" />
+            <ValidationMessage For="@(() => paymentInfo.Name)" />
+        </div>
+        <div>
+            <label>Card Number: </label>
+            <InputText @bind-Value="paymentInfo.CardNumber" class="form-control" maxlength="19" />
+            <ValidationMessage For="@(() => paymentInfo.CardNumber)"/>
+        </div>
+
+        <div>
+            <label>Expiration Date:</label>
+            <InputDate @bind-Value="paymentInfo.ExpirationDate" class="form-control" />
+            <ValidationMessage For="@(() => paymentInfo.ExpirationDate)" />
+
+        </div>  
+
+        <div>
+            <label>CVV:</label>
+            <InputText @bind-Value="paymentInfo.CVC" class="form-control" minlength="3" maxlength="4" column="4" />
+            <ValidationMessage For="@(() => paymentInfo.CVC)" />
+        </div>
+
+    </EditForm>
+
+    <div>
+        <div id="Finish" @onclick="FinishPayment" class="btn btn-success float-end"> Finish</div>
+    </div>
+</div>
+
+@code {
+    private Customer userAddress = new();
+    private Customer privateInfo = new();
+    private PaymentInfo paymentInfo = new();
+    private Order order;
+
+    [Inject]
+    private IUnitOfWork uow { get; set; } = null!;
+
+    [Parameter]
+    public int shoppingCartId { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // Load the order using the shoppingCartId
+        order = uow.Orders.GetAll().FirstOrDefault(o => o.ShoppingCartId == shoppingCartId);
+    }
+
+    protected void FinishPayment()
+    {
+        string statusMessage = "";
+
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        if (cartItems == null || !cartItems.Any())
+            {
+                statusMessage = "Your cart is empty, Please add items before checking out.";
+                return;
+            }
+
+        if(userAddress != null && privateInfo != null)
+        {
+            uow.Orders.Delete(order);
+            NavManager.NavigateTo("/checkout");
+        }
+        var inventory = uow.Products.GetAll();
+
+        foreach (var item in cartItems)
+        {
+            
+            Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
+
+            if (prod.Quantity == 0)
+            {
+                uow.Products.Delete(prod);
+            }
+
+            if (prod.Quantity != null)
+            {
+                prod.Quantity -= item.Quantity;
+                uow.Products.Update(prod);
+                uow.Orders.Delete(order);
+                uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
+            }
+           
+        }
+    }
+}

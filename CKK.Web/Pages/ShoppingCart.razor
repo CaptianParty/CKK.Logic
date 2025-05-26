@@ -1,10 +1,12 @@
-﻿@page "/shoppingcart"
+﻿@page "/shoppingCart"
 
 
 @using CKK.Logic.Models
 @using CKK.DB.UOW
 @using CKK.DB.Interfaces
+@using CKK.Persistance.Models
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 @if (uow == null)
 {
@@ -22,16 +24,25 @@ else
             @foreach (var item in uow.Products.GetAll())
             {
                 <div class="card" style="width: 18rem; padding: 5px;">
+
                     <div class="card-body">
                         <h5 class="card-title text-center">@item.Name</h5>
                         <p class="card-text">@item.Price.ToString("c")</p>
                         <p class="card-text">Quantity Available: @item.Quantity</p>
                         <br />
                     </div>
-                    <div class="card-footer">
-                        <input class="num-spinner" id="spinner-@item.Id" @onchange="@(e => spinnerChange(item.Id, e.Value))"
-                        style="padding: 10px; width: 75%;" type="number" value="0" min="0" max="@item.Quantity" step="1"
-                        />
+
+                    <div class="card-footer d-flex align-items-center">
+
+                        <input class="num-spinner" id="spinner-@item.Id" 
+                        @onchange="@(e => spinnerChange(item.Id, e.Value))"
+                        style="padding: 10px; width: 75%;" type="number" value="0" 
+                        min="0" max="@item.Quantity" step="1"/>
+                        
+                        <a id = BuyNowBtn @onclick ="Info" 
+                            class="btn btn-success btn-sm" 
+                        style="margin-left: .85em; line-height:1;">Buy Now</a>
+                        
 
                     </div>
                 </div>
@@ -39,26 +50,36 @@ else
 
             }
         </div>
-        <p>The CheckOut button removes inventory based on your shopping cart and deletes your order and shopping card.</p>
     </form>
     <div >
-        <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
+
+       <!-- <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
+       -->
+    </div>
+
+    <div >
+        <a id="CartBtn" @onclick="CartPage" class="btn btn-success float-lg-start">@Cart, @checkoutTotal</a>
     </div>
 }
 
-
 @code {
+
+
     string checkoutTotal = $"Check Out - .00";
     private Order order;
+    FileStoring fileStore = new FileStoring();
     [Inject]
     private IUnitOfWork uow { get; set; } = null!;
 
+
+    //SHOP PAGE CODE
     protected override async Task OnInitializedAsync()
     {
+
         if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);
-            if (order == null) //Make new order when no active orders found
+            if (order == null) 
             {
                 //WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
                 Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
@@ -66,42 +87,48 @@ else
                 uow.Orders.Add(newOrder);
             }
         }
+        StateHasChanged();
     }
-    protected void CheckOut()
-    {
-        string statusMessage = "";
-        //Get order info
-        var inventory = uow.Products.GetAll();
 
-        //Update quantities of products in inventory
-        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
-        foreach (var item in cartItems)
-        {
-            Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
 
-            prod.Quantity -= item.Quantity;
-            uow.Products.Update(prod);
+    // protected async Task CheckOut()
+    // {
+    //     var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
 
-            if(prod.Quantity == 0)
-            {
-                uow.Products.Delete(prod);
-            }
-        }
+    //     if(cartItems == null || !cartItems.Any())
+    //     {
+    //          await ShowAlert("Your cart is empty. Please add items before checking out");
+    //         return;
+    //     }
 
-        //For the assignment we just delete or clear
-        uow.Orders.Delete(order);
-        uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
+    //     var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
+    //     if (total == 0)
+    //     {
+    //          await ShowAlert("Your cart is empty. Please add items before checking out");
+    //         return;
+    //     }
 
-        statusMessage = "Order Placed Successfully";
-        UpdateTotal();
-        NavManager.NavigateTo("/checkout");
+    //     var inventory = uow.Products.GetAll();
 
-    }
-    private void UpdateTotal()
+    //     foreach (var item in cartItems)
+    //     {
+    //         Product? prod = inventory.FirstOrDefault(x => x.Id == item.ProductId);
+
+    //         if(prod != null && prod.Quantity == 0)
+    //         {
+    //             uow.Products.Delete(prod);
+    //         }
+    //     }
+    //     fileStore.SaveCart(new List<ShoppingCartItem>());
+
+    //     UpdateTotal();
+    //     NavManager.NavigateTo($"/Info/{order.ShoppingCartId}");
+    // }
+
+    protected void UpdateTotal()
     {
         var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId).ToString("c");
         checkoutTotal = $"Check Out - {total}";
-
     }
 
     protected void spinnerChange(int productId, object value)
@@ -109,6 +136,52 @@ else
         var Item = uow.ShoppingCarts.AddToCart(order.ShoppingCartId, productId, Convert.ToInt16(value));
         UpdateTotal();
 
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        fileStore.SaveCart(cartItems);
+        
+    }
+
+    //CART PAGE CODE
+
+    string Cart= "Go to Cart";
+
+    protected async Task CartPage()
+    {
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        if (cartItems == null || !cartItems.Any())
+        {
+             await ShowAlert("Your cart is empty. Please add items before checking out");
+            return;
+        }
+        
+        var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
+        if (total == 0)
+        {
+            return;
+        }
+
+        UpdateTotal();
+        NavManager.NavigateTo($"/Cart/{order.ShoppingCartId}");
+    }
+    
+    protected async Task Info()
+    {
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        if (cartItems == null || !cartItems.Any())
+        {
+             await ShowAlert("Your cart is empty. Please add items before checking out");
+            return;
+        }
+        var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
+        if (total == 0)
+        {
+            return;
+        }
+        NavManager.NavigateTo($"/Info/{order.ShoppingCartId}");
+    }
+    private async Task ShowAlert(string alert)
+    {
+        await JS.InvokeVoidAsync("alert", alert);
     }
 }
 

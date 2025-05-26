@@ -32,17 +32,6 @@ namespace CKK.DB.Repository
 
 
 
-        //public int Delete(int id)
-        //{
-        //    var sql = "DELETE FROM Products WHERE Id = @Id";
-        //    using (var connection = _connectionFactory.GetConnection)
-        //    {
-        //        connection.Open();
-        //        return connection.Execute(sql, new { Id = id });
-        //    }
-        //}
-
-        //IMPLEMENTED NEW DELETE WORKS
         public int Delete(Product entity)
         {
 

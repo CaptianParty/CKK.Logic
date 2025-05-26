@@ -53,6 +53,11 @@ namespace CKK.DB.Repository
                     Quantity = quantity
                 };
 
+                if (item == null)
+                {
+                    throw new InvalidOperationException($"Product with ID {ProductId} not found.");
+                }
+
                 if (item.Quantity >= quantity)
                 {
                     if (ProductItems != null)

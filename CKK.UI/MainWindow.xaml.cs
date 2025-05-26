@@ -193,13 +193,22 @@ namespace CKK.UI
                         RefreshList();
                     }
                 }
+
+                if (itemListView.View is GridView gridView)
+                {
+                    foreach (var column in gridView.Columns)
+                    {
+                        column.Width = 0;
+                        column.Width = double.NaN;
+                    }
+                }
             }
         
 
             else if (inventoryListBox.SelectedItem is Product inventorySelected)
             {
                 var product = unitOfWork.Products.GetById(inventorySelected.Id);
-        EditItem editItem = new EditItem(connectionFactory, product);
+                EditItem editItem = new EditItem(connectionFactory, product);
                 if(editItem.ShowDialog() == true)
                 {
                     if (searchTextBox.Text != "")
@@ -208,7 +217,7 @@ namespace CKK.UI
                     }
                     RefreshList();
 
-    }
+                }
 
                 if (itemListView.View is GridView gridView)
                 {
@@ -219,16 +228,6 @@ namespace CKK.UI
                     }
                 }
             }
-
-            
-            //else
-            //{
-            //    if(inventoryListBox.SelectedItem == null)
-            //    {
-            //        MessageBox.Show("Please select an item to edit");
-            //    }
-            //}
-
         }
 
 
