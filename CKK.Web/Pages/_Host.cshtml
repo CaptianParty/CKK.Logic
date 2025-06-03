@@ -30,5 +30,28 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <script>
+        window.cartCookies = {
+            setCart: function (cartJson) {
+                document.cookie = "cart=" + encodeURIComponent(cartJson) + "; path=/; max-age=604800"; // 7 days
+            },
+            getCart: function () {
+                let name = "cart=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1);
+                    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+                }
+                return "";
+            },
+            clearCart: function () {
+                document.cookie = "cart=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            }
+        };
+    </script>
+
 </body>
 </html>

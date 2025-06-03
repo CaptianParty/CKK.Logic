@@ -38,11 +38,11 @@ else
                         @onchange="@(e => spinnerChange(item.Id, e.Value))"
                         style="padding: 10px; width: 75%;" type="number" value="0" 
                         min="0" max="@item.Quantity" step="1"/>
-                        
+
                         <a id = BuyNowBtn @onclick ="Info" 
-                            class="btn btn-success btn-sm" 
+                        class="btn btn-success btn-sm" 
                         style="margin-left: .85em; line-height:1;">Buy Now</a>
-                        
+
 
                     </div>
                 </div>
@@ -53,8 +53,8 @@ else
     </form>
     <div >
 
-       <!-- <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
-       -->
+        <!-- <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
+        -->
     </div>
 
     <div >
@@ -76,6 +76,9 @@ else
     protected override async Task OnInitializedAsync()
     {
 
+
+     
+
         if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);
@@ -86,44 +89,12 @@ else
                 order = newOrder;
                 uow.Orders.Add(newOrder);
             }
+
+           
+
         }
         StateHasChanged();
     }
-
-
-    // protected async Task CheckOut()
-    // {
-    //     var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
-
-    //     if(cartItems == null || !cartItems.Any())
-    //     {
-    //          await ShowAlert("Your cart is empty. Please add items before checking out");
-    //         return;
-    //     }
-
-    //     var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
-    //     if (total == 0)
-    //     {
-    //          await ShowAlert("Your cart is empty. Please add items before checking out");
-    //         return;
-    //     }
-
-    //     var inventory = uow.Products.GetAll();
-
-    //     foreach (var item in cartItems)
-    //     {
-    //         Product? prod = inventory.FirstOrDefault(x => x.Id == item.ProductId);
-
-    //         if(prod != null && prod.Quantity == 0)
-    //         {
-    //             uow.Products.Delete(prod);
-    //         }
-    //     }
-    //     fileStore.SaveCart(new List<ShoppingCartItem>());
-
-    //     UpdateTotal();
-    //     NavManager.NavigateTo($"/Info/{order.ShoppingCartId}");
-    // }
 
     protected void UpdateTotal()
     {

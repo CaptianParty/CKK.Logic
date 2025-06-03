@@ -6,34 +6,32 @@ namespace CKK.Logic.Models
     [Serializable]
     public class Customer : Entity
     {
-        //WILL NEED TO IMPLEMENT THIS ON FINAL VERSION FOR MY OWN PROJECT BY ADDING A CHECKOUT WITH USER INPUT
-
-    
         public int ShoppingCartId { get; set; }
 
-
+        [Required(ErrorMessage = "Street is required")]
         public string Street { get; set; } = string.Empty;
 
-        public string Zip { get; set; } 
+        [Required(ErrorMessage = "City is required")]
         public string City { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "State is required")]
         public string State { get; set; } = string.Empty;
 
-    }
-    [Serializable]
-    public class PaymentInfo : Entity
-    {
+        [Required(ErrorMessage = "Zip is required")]
+        public string Zip { get; set; } = string.Empty;
+    
+    
         [Required(ErrorMessage = "Name is required")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Card Number is required")]
-        public string CardNumber { get; set; }
-            
+        public string CardNumber { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Expiration date required")]
         public DateTime? ExpirationDate { get; set; }
 
         [Required(ErrorMessage = "CVV required")]
-        public string CVC { get; set; }
-
+        public string CVC { get; set; } = string.Empty;
     }
 
 }

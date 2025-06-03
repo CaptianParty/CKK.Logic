@@ -6,74 +6,61 @@
 @using CKK.DB.Interfaces
 @inject NavigationManager NavManager
 
+<div >
+    <EditForm Model="@checkout.CustomerInfo" OnValidSubmit="@(async () => await FinishPayment())">
 
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<!--MAKE ALL FIELDS REQUIRED-->
-<div class="container-fluid">
-    <EditForm Model="@userAddress">
-        <address>
-            <div>
-                <label>Street:</label>
-                <InputText @bind-Value="userAddress.Street" class="form-control"/>
-            </div>
-            <div>
-                <label>City:</label>
-                <InputText @bind-Value="userAddress.City" class="form-control"/>
-            </div>
-            <div>
-                <label>State:</label>
-                <InputText @bind-Value="userAddress.State" class="form-control" />
-            </div>
-            <div>
-                <label>Zip:</label>
-                <InputText @bind-Value="userAddress.Zip" class="form-control"/>
-               
-                
-            </div>
-        </address>
-    </EditForm>
+        <div>
+            <label>Street:</label>
+            <InputText @bind-Value="checkout.CustomerInfo.Street" />
+        </div>
 
-    <EditForm Model="@paymentInfo" OnValidSubmit="FinishPayment">
+        <div>
+            <label>City:</label>
+            <InputText @bind-Value="checkout.CustomerInfo.City" />
+        </div>
 
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
+        <div>
+            <label>State:</label>
+            <InputText @bind-Value="checkout.CustomerInfo.State" />
+        </div>
 
+        <div>
+            <label>Zip:</label>
+            <InputText @bind-Value="checkout.CustomerInfo.Zip" />
+        </div>
+    
         <div>
             <label>Name:</label>
-            <InputText @bind-Value="paymentInfo.Name" class="form-control" />
-            <ValidationMessage For="@(() => paymentInfo.Name)" />
+            <InputText @bind-Value="checkout.CustomerInfo.Name" />
         </div>
+
         <div>
             <label>Card Number: </label>
-            <InputText @bind-Value="paymentInfo.CardNumber" class="form-control" maxlength="19" />
-            <ValidationMessage For="@(() => paymentInfo.CardNumber)"/>
+            <InputText @bind-Value="checkout.CustomerInfo.CardNumber" />
         </div>
 
         <div>
             <label>Expiration Date:</label>
-            <InputDate @bind-Value="paymentInfo.ExpirationDate" class="form-control" />
-            <ValidationMessage For="@(() => paymentInfo.ExpirationDate)" />
-
-        </div>  
+            <InputDate @bind-Value="checkout.CustomerInfo.ExpirationDate" />
+        </div>
 
         <div>
             <label>CVV:</label>
-            <InputText @bind-Value="paymentInfo.CVC" class="form-control" minlength="3" maxlength="4" column="4" />
-            <ValidationMessage For="@(() => paymentInfo.CVC)" />
+            <InputText @bind-Value="checkout.CustomerInfo.CVC" />
         </div>
-
+        <button type="submit">Finish</button>
     </EditForm>
 
-    <div>
-        <div id="Finish" @onclick="FinishPayment" class="btn btn-success float-end"> Finish</div>
-    </div>
 </div>
 
 @code {
-    private Customer userAddress = new();
-    private Customer privateInfo = new();
-    private PaymentInfo paymentInfo = new();
+    private CheckoutModel checkout = new();
     private Order order;
+
+    //private Customer customer = new();
 
     [Inject]
     private IUnitOfWork uow { get; set; } = null!;
@@ -81,48 +68,54 @@
     [Parameter]
     public int shoppingCartId { get; set; }
 
+    [Inject]
+    private IJSRuntime JS { get; set; }
+
     protected override void OnParametersSet()
     {
         // Load the order using the shoppingCartId
         order = uow.Orders.GetAll().FirstOrDefault(o => o.ShoppingCartId == shoppingCartId);
     }
 
-    protected void FinishPayment()
+
+
+    protected async Task FinishPayment()
     {
         string statusMessage = "";
 
         var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
         if (cartItems == null || !cartItems.Any())
-            {
-                statusMessage = "Your cart is empty, Please add items before checking out.";
-                return;
-            }
-
-        if(userAddress != null && privateInfo != null)
         {
-            uow.Orders.Delete(order);
-            NavManager.NavigateTo("/checkout");
+            statusMessage = "Your cart is empty, Please add items before checking out.";
+            return;
         }
+
         var inventory = uow.Products.GetAll();
 
         foreach (var item in cartItems)
         {
-            
-            Product prod = inventory.Where(x => x.Id == item.ProductId).FirstOrDefault();
+            Product prod = inventory.FirstOrDefault(x => x.Id == item.ProductId);
 
-            if (prod.Quantity == 0)
-            {
-                uow.Products.Delete(prod);
-            }
-
-            if (prod.Quantity != null)
+            if (prod != null)
             {
                 prod.Quantity -= item.Quantity;
+                if (prod.Quantity < 0)
+                    prod.Quantity = 0; // Prevent negative inventory
+
                 uow.Products.Update(prod);
-                uow.Orders.Delete(order);
-                uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
             }
-           
         }
+
+        uow.Orders.Delete(order);
+        uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
+
+        // If you use cookies for cart persistence, clear them here:
+        if (JS != null)
+        {
+            await JS.InvokeVoidAsync("cartCookies.clearCart");
+        }
+
+        NavManager.NavigateTo("/checkout");
     }
+    
 }

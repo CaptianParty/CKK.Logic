@@ -62,20 +62,18 @@ namespace CKK.DB.Repository
                 {
                     if (ProductItems != null)
                     {
-                    //Product already in cart so update quantity
-                    var test = UpdateAsync(shopitem);
+                        var test = UpdateAsync(shopitem);
                     }
 
                     else
                     {
-                        //New product for the cart so add it
                         var test = AddAsync(shopitem);
                     }
                 }
                 return shopitem;
             }
         }
-        
+
 
         public int ClearCart(int shoppingCartId)
         {
