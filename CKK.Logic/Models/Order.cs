@@ -11,5 +11,6 @@ namespace CKK.Logic.Models
         public string OrderNumber { get; set; }
         public int CustomerId { get; set; }
         public int ShoppingCartId { get; set; }
+        
     }
 }

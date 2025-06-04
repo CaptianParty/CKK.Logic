@@ -1,9 +1,91 @@
 ﻿@page "/checkout"
+@page "/checkout/{shoppingCartId:int}"
+
+@using CKK.Logic.Models
+@using CKK.DB.UOW
+@using CKK.DB.Interfaces
+@using CKK.Persistance.Models
+@using CKK.DB.Repository
+
+@inject IUnitOfWork uow
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 
 <h1>Congratulations your order has been placed successful!</h1>
 
+
+@if (shoppingCartId != null )
+{
+    <h3>Receipt</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+           
+@*FIND OUT WHY THE CARTITEMS IS NULL*@
+            @foreach (var item in cartItems)
+            {
+                var product = uow.Products.GetAll().FirstOrDefault(p => p.Id == item.ProductId);
+                if (product != null)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@product.Price.ToString("c")</td>
+                        <td>@(item.Quantity * product.Price).ToString("c")</td>
+                    </tr>
+                }
+            }
+            
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Total:</td>
+                <td class="fw-bold">@cartTotal.ToString("c")</td>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+
+else
+{
+    <p>No items found for this order.</p>
+}
+
+<button class="btn btn-primary" onclick="window.print()">Print Receipt</button>
 @code {
 
-    //POPULATE RECIEPT SO THEY CAN DOWNLOAD IT IF THEY WANT
+    [Parameter]
+    public int shoppingCartId { get; set; }
+
+    private List<ShoppingCartItem> cartItems = new();
+    private decimal cartTotal = 0;
+    private Order order;
+
+
+    protected override void OnParametersSet()
+    {
+        // Get the items for the receipt
+        cartItems = uow.ShoppingCarts.GetProducts(shoppingCartId)
+            ?.Where(i => i.Quantity > 0)
+            .ToList() ?? new();
+
+        // Calculate the total
+        cartTotal = cartItems.Sum(i =>
+        {
+            var prod = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId);
+            return prod != null ? i.Quantity * prod.Price : 0;
+        });
+
+
+    }
+
 }

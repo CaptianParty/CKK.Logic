@@ -75,10 +75,6 @@ else
     //SHOP PAGE CODE
     protected override async Task OnInitializedAsync()
     {
-
-
-     
-
         if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);

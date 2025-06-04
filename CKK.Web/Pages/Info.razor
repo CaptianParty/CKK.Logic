@@ -1,5 +1,5 @@
 ﻿@page "/Info"
- @page "/Info/{shoppingCartId:int}"
+@page "/Info/{shoppingCartId:int}"
 
 @using CKK.Logic.Models
 @using CKK.DB.UOW
@@ -51,6 +51,7 @@
             <label>CVV:</label>
             <InputText @bind-Value="checkout.CustomerInfo.CVC" />
         </div>
+
         <button type="submit">Finish</button>
     </EditForm>
 
@@ -106,6 +107,7 @@
             }
         }
 
+        //FIGURE OUT WHERE TO PUT THIS
         uow.Orders.Delete(order);
         uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
 
