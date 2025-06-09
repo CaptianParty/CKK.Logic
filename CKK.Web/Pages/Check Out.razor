@@ -2,6 +2,7 @@
 
 @using CKK.Logic.Models
 @using CKK.DB.Interfaces
+@using CKK.DB.UOW
 
 @if (purchasedItems != null && purchasedItems.Any())
 {
@@ -22,7 +23,7 @@
                     <td>@item.ProductName</td>
                     <td>@item.Quantity</td>
                     <td>@item.PriceAtPurchase.ToString("c")</td>
-                    <td>@(item.Quantity * item.PriceAtPurchase).ToString("c")</td>
+                    <td>@($"${item.Quantity * item.PriceAtPurchase}")</td>
                 </tr>
             }
         </tbody>
@@ -62,5 +63,7 @@ else
             cartTotal = purchasedItems.Sum(i => i.Quantity * i.PriceAtPurchase);
         }
     }
+
+
 
 }

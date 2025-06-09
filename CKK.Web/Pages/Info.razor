@@ -85,21 +85,20 @@
         var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
         if (cartItems == null || !cartItems.Any())
         {
-            // Optionally show a message to the user
             return;
         }
 
         var inventory = uow.Products.GetAll();
 
-        // --- CHANGED: Save purchased items to the order before clearing the cart ---
         order.PurchasedItems = cartItems.Select(i => new PurchasedItem
             {
                 ProductName = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId)?.Name ?? "",
                 Quantity = i.Quantity,
                 PriceAtPurchase = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId)?.Price ?? 0
             }).ToList();
-        uow.Orders.Update(order);
-        // --- END CHANGED ---
+        uow.Orders.Update(order); // --- THIS PERSISTS THE RECEIPT DATA ---
+    
+        uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
 
         foreach (var item in cartItems)
         {
@@ -109,22 +108,19 @@
             {
                 prod.Quantity -= item.Quantity;
                 if (prod.Quantity < 0)
-                    prod.Quantity = 0; // Prevent negative inventory
+                    prod.Quantity = 0;
 
                 uow.Products.Update(prod);
             }
         }
 
-        uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
 
         if (JS != null)
         {
             await JS.InvokeVoidAsync("cartCookies.clearCart");
         }
 
-        // --- CHANGED: Pass the orderId to the checkout page for the receipt ---
         NavManager.NavigateTo($"/checkout/{order.OrderId}");
-        // --- END CHANGED ---
     }
     
 }
