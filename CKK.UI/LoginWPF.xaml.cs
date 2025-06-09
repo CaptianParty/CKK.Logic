@@ -17,12 +17,12 @@ namespace CKK.UI
 
         private void loginButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(usernameTextBox.Text) || string.IsNullOrWhiteSpace(passwordBox.Password))
+            if (string.IsNullOrWhiteSpace(employeeIdTextBox.Text) || string.IsNullOrWhiteSpace(passwordBox.Password))
             {
                 MessageBox.Show("Please enter a username and password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (usernameTextBox.Text == "admin" && passwordBox.Password == "password")
+            if (employeeIdTextBox.Text == "admin" && passwordBox.Password == "password")
             {
 
                 this.DialogResult = true;
@@ -48,6 +48,11 @@ namespace CKK.UI
             var newEmployeeWindow = new NewEmployee();
             newEmployeeWindow.Owner = this; // Optional: sets this window as the owner
             newEmployeeWindow.ShowDialog();
+        }
+
+        private void employeeIdTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = !e.Text.All(char.IsDigit);
         }
     }
 }

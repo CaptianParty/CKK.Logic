@@ -16,6 +16,8 @@ using System.Data;
 using System.Data.SqlClient;
 using CKK.DB.Interfaces;
 using CKK.DB.UOW;
+using System.Text.RegularExpressions;
+
 
 
 
@@ -39,6 +41,26 @@ namespace CKK.UI
 
         private static int LastEmployeeNumber = 110;
 
+        private bool IsStrongPassword(string password, int minLength = 8)
+        {
+            if (string.IsNullOrEmpty(password) || password.Length < minLength)
+                return false;
+
+            bool hasUpper = password.Any(char.IsUpper);
+            bool hasLower = password.Any(char.IsLower);
+            bool hasDigit = password.Any(char.IsDigit);
+            bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
+
+            return hasUpper && hasLower && hasDigit && hasSpecial;
+        }
+
+        private void PhoneBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !e.Text.All(char.IsDigit);
+        }
+
+
+
         private void Register_Click(object sender, RoutedEventArgs e)
         {
 
@@ -50,6 +72,15 @@ namespace CKK.UI
             string password = PasswordBox.Password?.Trim();
             int employeeNumber = ++LastEmployeeNumber;
 
+            if (!IsStrongPassword(password, 8))
+            {
+                MessageBox.Show(
+                    "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+                    "Password Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(firstName) ||
                 string.IsNullOrWhiteSpace(lastName) ||
@@ -77,12 +108,12 @@ namespace CKK.UI
                 return;
             }
 
-            if (!phone.All(char.IsDigit))
+            if (!Regex.IsMatch(phone, @"^\d{3}-\d{3}-\d{4}$"))
             {
-                MessageBox.Show("Phone number must contain only digits.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Phone number must be in the format 123-456-7890.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            
+            s
             if (password.Length < 6)
             {
                 MessageBox.Show("Password must be at least 6 characters long.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -93,7 +124,6 @@ namespace CKK.UI
             MessageBox.Show($"Employee registered successfully!\nEmployee Number: {employeeNumber}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
 
-            // Registration successful
             MessageBox.Show("Employee registered successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
             try
@@ -128,5 +158,26 @@ namespace CKK.UI
 
         }
 
+        private void PhoneBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox == null) return;
+
+            string digits = new string(textBox.Text.Where(char.IsDigit).ToArray());
+
+            string formatted = digits;
+            if (digits.Length > 6)
+                formatted = $"{digits.Substring(0, 3)}-{digits.Substring(3, 3)}-{digits.Substring(6, Math.Min(4, digits.Length - 6))}";
+            else if (digits.Length > 3)
+                formatted = $"{digits.Substring(0, 3)}-{digits.Substring(3, Math.Min(3, digits.Length - 3))}";
+
+            if (textBox.Text != formatted)
+            {
+                int selStart = textBox.SelectionStart;
+                textBox.Text = formatted;
+                // Set caret to the end or as close as possible
+                textBox.SelectionStart = Math.Min(selStart, textBox.Text.Length);
+            }
+        }
     }
 }

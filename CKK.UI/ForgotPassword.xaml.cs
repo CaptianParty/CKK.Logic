@@ -28,5 +28,18 @@ namespace CKK.UI
         {
 
         }
+
+        private bool IsStrongPassword(string password, int minLength = 8)
+        {
+            if (string.IsNullOrEmpty(password) || password.Length < minLength)
+                return false;
+
+            bool hasUpper = password.Any(char.IsUpper);
+            bool hasLower = password.Any(char.IsLower);
+            bool hasDigit = password.Any(char.IsDigit);
+            bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
+
+            return hasUpper && hasLower && hasDigit && hasSpecial;
+        }
     }
 }

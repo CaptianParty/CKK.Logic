@@ -34,7 +34,9 @@
         <TextBox x:Name="EmailBox" Grid.Row="2" Grid.Column="1" Margin="0,5"/>
 
         <TextBlock Text="Phone:" Grid.Row="3" Grid.Column="0" Margin="0,5"/>
-        <TextBox x:Name="PhoneBox" Grid.Row="3" Grid.Column="1" Margin="0,5"/>
+        <TextBox x:Name="PhoneBox" PreviewTextInput="PhoneBox_PreviewTextInput"
+                 MaxLength="12" 
+                 Grid.Row="3" Grid.Column="1" Margin="0,5" TextChanged="PhoneBox_TextChanged"/>
 
         <TextBlock Text="Position:" Grid.Row="4" Grid.Column="0" Margin="0,5"/>
         <TextBox x:Name="PositionBox" Grid.Row="4" Grid.Column="1" Margin="0,5"/>
