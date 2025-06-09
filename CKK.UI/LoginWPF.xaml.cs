@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using CKK.DB.Interfaces;
+using CKK.Logic.Models;
+using System.Windows;
 
 
 namespace CKK.UI
@@ -29,6 +31,23 @@ namespace CKK.UI
             {
                 MessageBox.Show("Invalid username or password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ForgotPasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(ForgotPasswordButton_Click != null)
+            {
+                var forgotPassword = new ForgotPassword();
+                forgotPassword.Owner = this; // Optional: sets this window as the owner
+                forgotPassword.ShowDialog();
+            }
+        }
+
+        private void NewEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            var newEmployeeWindow = new NewEmployee();
+            newEmployeeWindow.Owner = this; // Optional: sets this window as the owner
+            newEmployeeWindow.ShowDialog();
         }
     }
 }

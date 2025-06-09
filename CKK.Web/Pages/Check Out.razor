@@ -1,21 +1,9 @@
-﻿@page "/checkout"
-@page "/checkout/{shoppingCartId:int}"
+﻿@page "/checkout/{orderId:int}"
 
 @using CKK.Logic.Models
-@using CKK.DB.UOW
 @using CKK.DB.Interfaces
-@using CKK.Persistance.Models
-@using CKK.DB.Repository
 
-@inject IUnitOfWork uow
-@inject NavigationManager NavManager
-@inject IJSRuntime JS
-
-
-<h1>Congratulations your order has been placed successful!</h1>
-
-
-@if (shoppingCartId != null )
+@if (purchasedItems != null && purchasedItems.Any())
 {
     <h3>Receipt</h3>
     <table class="table">
@@ -28,22 +16,15 @@
             </tr>
         </thead>
         <tbody>
-           
-@*FIND OUT WHY THE CARTITEMS IS NULL*@
-            @foreach (var item in cartItems)
+            @foreach (var item in purchasedItems)
             {
-                var product = uow.Products.GetAll().FirstOrDefault(p => p.Id == item.ProductId);
-                if (product != null)
-                {
-                    <tr>
-                        <td>@product.Name</td>
-                        <td>@item.Quantity</td>
-                        <td>@product.Price.ToString("c")</td>
-                        <td>@(item.Quantity * product.Price).ToString("c")</td>
-                    </tr>
-                }
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.PriceAtPurchase.ToString("c")</td>
+                    <td>@(item.Quantity * item.PriceAtPurchase).ToString("c")</td>
+                </tr>
             }
-            
         </tbody>
         <tfoot>
             <tr>
@@ -52,40 +33,34 @@
             </tr>
         </tfoot>
     </table>
+    <button class="btn btn-primary" onclick="window.print()">Print Receipt</button>
 }
-
-
 else
 {
     <p>No items found for this order.</p>
 }
-
-<button class="btn btn-primary" onclick="window.print()">Print Receipt</button>
 @code {
 
+
+    [Inject]
+    private IUnitOfWork uow { get; set; } = null!;
+
     [Parameter]
-    public int shoppingCartId { get; set; }
+    public int orderId { get; set; }
 
-    private List<ShoppingCartItem> cartItems = new();
+
+
+    private List<PurchasedItem> purchasedItems = new();
     private decimal cartTotal = 0;
-    private Order order;
-
 
     protected override void OnParametersSet()
     {
-        // Get the items for the receipt
-        cartItems = uow.ShoppingCarts.GetProducts(shoppingCartId)
-            ?.Where(i => i.Quantity > 0)
-            .ToList() ?? new();
-
-        // Calculate the total
-        cartTotal = cartItems.Sum(i =>
+        var order = uow.Orders.GetAll().FirstOrDefault(o => o.OrderId == orderId);
+        if (order != null && order.PurchasedItems != null)
         {
-            var prod = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId);
-            return prod != null ? i.Quantity * prod.Price : 0;
-        });
-
-
+            purchasedItems = order.PurchasedItems;
+            cartTotal = purchasedItems.Sum(i => i.Quantity * i.PriceAtPurchase);
+        }
     }
 
 }

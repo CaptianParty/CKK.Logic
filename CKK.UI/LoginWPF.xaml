@@ -7,33 +7,26 @@
         mc:Ignorable="d"
         Title="LoginWPF" Height="450" Width="800">
     <Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Label Margin="3" VerticalAlignment="Center" Content="Username:" />
-            <TextBox x:Name="usernameTextBox" Margin="3" Width="100" VerticalAlignment="Center" RenderTransformOrigin="1.185,1.395"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" >
+            <Label Content="Please Login" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Content="Username:" Width="80" VerticalAlignment="Center"/>
+                <TextBox x:Name="usernameTextBox" Width="180" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Content="Password:" Width="80" VerticalAlignment="Center"/>
+                <PasswordBox x:Name="passwordBox" Width="180" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Button x:Name="ForgotPasswordButton" Content="Forgot Password" FontSize="10" Background="White" BorderThickness="0"
+             FontStyle="Oblique" FontWeight="Normal" Foreground="Blue" Click="ForgotPasswordButton_Click" HorizontalAlignment="Left"/>
+
+            <Button x:Name="NewEmployee" Content="New Employee" FontSize="10" Background="White" BorderThickness="0"
+             FontStyle="Oblique" FontWeight="Normal" Foreground="Blue" Click="NewEmployee_Click" HorizontalAlignment="Left"/>
+
+            <Button Content="Login" FontSize="18" FontWeight="Bold" Click="loginButton_Click" Margin="0,20,0,0"/>
         </StackPanel>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" RenderTransformOrigin="1.307,0.407">
-            <Label Content="Password:" VerticalAlignment="Center" Margin="6 ,50 ,0, 0"/>
-            <PasswordBox x:Name="passwordBox" Margin="6, 50, 0, 0" Width="100" VerticalAlignment="Center" Password="password"
-                         />
-        </StackPanel>
-
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 50">
-            <Label Content="Please Login" FontSize="50" FontWeight="ExtraBold"/>
-        </StackPanel>
-
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,100,0,0">
-            <Button Content="Forgot Password" FontSize="10" Background="White" BorderThickness="0" 
-                    FontStyle="Oblique" FontWeight="Normal" Foreground="Blue"/>
-        </StackPanel>
-        
-        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,200,0,0">
-            <Button Content="Login" FontStretch="Expanded" FontSize="50" FontWeight="Bold" Click="loginButton_Click"/>
-        </StackPanel>
-
-        
-
-
-
     </Grid>
 </Window>

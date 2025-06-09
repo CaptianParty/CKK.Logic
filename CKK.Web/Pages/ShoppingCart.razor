@@ -4,7 +4,7 @@
 @using CKK.Logic.Models
 @using CKK.DB.UOW
 @using CKK.DB.Interfaces
-@using CKK.Persistance.Models
+@using CKK.Persistance
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
@@ -51,11 +51,7 @@ else
             }
         </div>
     </form>
-    <div >
 
-        <!-- <a id="CheckoutBtn" @onclick="CheckOut" class="btn btn-success float-lg-end ">@checkoutTotal</a>
-        -->
-    </div>
 
     <div >
         <a id="CartBtn" @onclick="CartPage" class="btn btn-success float-lg-start">@Cart, @checkoutTotal</a>
@@ -67,7 +63,6 @@ else
 
     string checkoutTotal = $"Check Out - .00";
     private Order order;
-    FileStoring fileStore = new FileStoring();
     [Inject]
     private IUnitOfWork uow { get; set; } = null!;
 
@@ -75,6 +70,10 @@ else
     //SHOP PAGE CODE
     protected override async Task OnInitializedAsync()
     {
+
+
+     
+
         if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);
@@ -104,7 +103,6 @@ else
         UpdateTotal();
 
         var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
-        fileStore.SaveCart(cartItems);
         
     }
 

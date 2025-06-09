@@ -1,5 +1,5 @@
 ﻿@page "/Info"
-@page "/Info/{shoppingCartId:int}"
+ @page "/Info/{shoppingCartId:int}"
 
 @using CKK.Logic.Models
 @using CKK.DB.UOW
@@ -51,7 +51,6 @@
             <label>CVV:</label>
             <InputText @bind-Value="checkout.CustomerInfo.CVC" />
         </div>
-
         <button type="submit">Finish</button>
     </EditForm>
 
@@ -60,6 +59,8 @@
 @code {
     private CheckoutModel checkout = new();
     private Order order;
+
+
 
     //private Customer customer = new();
 
@@ -79,19 +80,26 @@
     }
 
 
-
     protected async Task FinishPayment()
     {
-        string statusMessage = "";
-
         var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
         if (cartItems == null || !cartItems.Any())
         {
-            statusMessage = "Your cart is empty, Please add items before checking out.";
+            // Optionally show a message to the user
             return;
         }
 
         var inventory = uow.Products.GetAll();
+
+        // --- CHANGED: Save purchased items to the order before clearing the cart ---
+        order.PurchasedItems = cartItems.Select(i => new PurchasedItem
+            {
+                ProductName = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId)?.Name ?? "",
+                Quantity = i.Quantity,
+                PriceAtPurchase = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId)?.Price ?? 0
+            }).ToList();
+        uow.Orders.Update(order);
+        // --- END CHANGED ---
 
         foreach (var item in cartItems)
         {
@@ -107,17 +115,16 @@
             }
         }
 
-        //FIGURE OUT WHERE TO PUT THIS
-        uow.Orders.Delete(order);
         uow.ShoppingCarts.ClearCart(order.ShoppingCartId);
 
-        // If you use cookies for cart persistence, clear them here:
         if (JS != null)
         {
             await JS.InvokeVoidAsync("cartCookies.clearCart");
         }
 
-        NavManager.NavigateTo("/checkout");
+        // --- CHANGED: Pass the orderId to the checkout page for the receipt ---
+        NavManager.NavigateTo($"/checkout/{order.OrderId}");
+        // --- END CHANGED ---
     }
     
 }
