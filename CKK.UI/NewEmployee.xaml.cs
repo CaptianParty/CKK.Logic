@@ -17,9 +17,7 @@ using System.Data.SqlClient;
 using CKK.DB.Interfaces;
 using CKK.DB.UOW;
 using System.Text.RegularExpressions;
-
-
-
+using CKK.DB.Repository;
 
 namespace CKK.UI
 {
@@ -39,7 +37,6 @@ namespace CKK.UI
             InitializeComponent();
         }
 
-        private static int LastEmployeeNumber = 110;
 
         private bool IsStrongPassword(string password, int minLength = 8)
         {
@@ -70,7 +67,6 @@ namespace CKK.UI
             string phone = PhoneBox.Text?.Trim();
             string position = PositionBox.Text?.Trim();
             string password = PasswordBox.Password?.Trim();
-            int employeeNumber = ++LastEmployeeNumber;
 
             if (!IsStrongPassword(password, 8))
             {
@@ -113,49 +109,35 @@ namespace CKK.UI
                 MessageBox.Show("Phone number must be in the format 123-456-7890.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            s
+            
             if (password.Length < 6)
             {
                 MessageBox.Show("Password must be at least 6 characters long.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-
-            MessageBox.Show($"Employee registered successfully!\nEmployee Number: {employeeNumber}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-
-            MessageBox.Show("Employee registered successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            var employee = new Employee
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                Phone = phone,
+                Position = position,
+                Password = password // Consider hashing in production
+            };
 
             try
             {
-                using (var conn = connectionFactory.GetConnection)
-                {
-                    conn.Open();
-                    using (var cmd = new SqlCommand(
-                        "INSERT INTO Employees (EmployeeNumber, FirstName, LastName, Email, Phone, Position, Password) " +
-                        "VALUES (@EmployeeNumber, @FirstName, @LastName, @Email, @Phone, @Position, @Password)", (SqlConnection)conn))
-                    {
-                        cmd.Parameters.AddWithValue("@EmployeeNumber", employeeNumber);
-                        cmd.Parameters.AddWithValue("@FirstName", firstName);
-                        cmd.Parameters.AddWithValue("@LastName", lastName);
-                        cmd.Parameters.AddWithValue("@Email", email);
-                        cmd.Parameters.AddWithValue("@Phone", phone);
-                        cmd.Parameters.AddWithValue("@Position", position);
-                        cmd.Parameters.AddWithValue("@Password", password); // Consider hashing in production
+                var employeeRepo = new EmployeeRepository(connectionFactory);
+                int newEmployeeNumber = employeeRepo.AddEmployee(employee);
 
-                        cmd.ExecuteNonQuery();
-                    }
-                }
+                MessageBox.Show($"Employee registered successfully!\nEmployee Number: {newEmployeeNumber}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Database error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-
-            this.Close();
-
+            };
         }
 
         private void PhoneBox_TextChanged(object sender, TextChangedEventArgs e)
