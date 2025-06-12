@@ -46,19 +46,10 @@
                 }
             }
         </ul>
-        @if(order != null)
-        {
-            var cartItems= uow.ShoppingCarts.GetProducts(shoppingCartId);
-            var cartTotal = cartItems?.Where(i => i.Quantity > 0)
-            .Sum(i => {
-                var prod  = uow.Products.GetAll().FirstOrDefault(p => p.Id == i.ProductId);
-                return prod != null ? i.Quantity * prod.Price : 0;
-            }) ?? 0;
 
-            <div class="mt-3 fw-bold">
-                Cart Total: @cartTotal.ToString("c")
-            </div>
-        }
+        <div class="mt-3 fw-bold">
+            Cart Total: @cartTotal.ToString("c")
+        </div>
 
     </div>
     <div style="margin-top: auto;">
@@ -68,6 +59,7 @@
 </div>
 
 @code {
+    //MAKE THE PRICE REPOPULATE WHEN THE WINDOW IS REPOPENED
     [Inject]
     private IUnitOfWork uow { get; set; } = null!;
     [Parameter]
@@ -76,24 +68,38 @@
     private Order order;
     private string? cartMessage;
 
+    private decimal cartTotal = 0m;
+
     [JSInvokable("SaveCartOnUnload")]
     public static async Task SaveCartOnUnload()
     {
     }
 
 
-    protected override async Task OnInitializedAsync()
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (uow != null)
+    //     {
+    //         order = uow.Orders.GetById(1);
+    //         if (order == null)
+    //         {
+    //             WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
+    //             Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
+    //             order = newOrder;
+    //             uow.Orders.Add(newOrder);
+    //         }
+    //     }
+    // }
+
+    protected void UpdateTotal()
     {
-        if (uow != null)
+        if(order != null)
         {
-            order = uow.Orders.GetById(1);
-            if (order == null)
-            {
-                //WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
-                Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
-                order = newOrder;
-                uow.Orders.Add(newOrder);
-            }
+            cartTotal = uow.ShoppingCarts.GetTotal(order.ShoppingCartId);
+        }
+        else
+        {
+            cartTotal = 0m;
         }
     }
 
@@ -110,6 +116,7 @@
                 uow.Orders.Add(newOrder);
 
             }
+            UpdateTotal();
         }
     }
 
@@ -147,6 +154,7 @@
                     });
             }
             await SaveCartToCookies();
+            UpdateTotal();
             StateHasChanged();
         }
     }
@@ -168,6 +176,7 @@
                 return;
             }
             await SaveCartToCookies();
+            UpdateTotal();
             StateHasChanged();
         }
     }

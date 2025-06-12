@@ -34,10 +34,12 @@ else
 
                     <div class="card-footer d-flex align-items-center">
 
-                        <input class="num-spinner" id="spinner-@item.Id" 
-                        @onchange="@(e => spinnerChange(item.Id, e.Value))"
-                        style="padding: 10px; width: 75%;" type="number" value="0" 
-                        min="0" max="@item.Quantity" step="1"/>
+                        <input class="num-spinner" id="spinner-@item.Id"
+                               @onchange="@(e => spinnerChange(item.Id, e.Value))"
+                               style="padding: 10px; width: 75%;" type="number"
+                               value="@GetCartQuantity(item.Id)"
+                               min="0" max="@item.Quantity" step="1" />
+
 
                         <a id = BuyNowBtn @onclick ="Info" 
                         class="btn btn-success btn-sm" 
@@ -54,14 +56,15 @@ else
 
 
     <div >
-        <a id="CartBtn" @onclick="CartPage" class="btn btn-success float-lg-start">@Cart, @checkoutTotal</a>
+        <a id="CartBtn" @onclick="CartPage" class="btn btn-success float-lg-start">@Cart, @checkoutTotal Quantity: @totalQuantity</a>
     </div>
 }
 
 @code {
-
+    //MAKE THE TOTAL AND QUANTITY POPULATE WHEN YOU REOPEN THE WINDOW 
 
     string checkoutTotal = $"Check Out - .00";
+    int totalQuantity = 0;
     private Order order;
     [Inject]
     private IUnitOfWork uow { get; set; } = null!;
@@ -70,32 +73,39 @@ else
     //SHOP PAGE CODE
     protected override async Task OnInitializedAsync()
     {
-
-
-     
-
         if (uow != null) //Valid uow
         {
             order = uow.Orders.GetById(1);
             if (order == null) 
             {
-                //WILL NEED TO CHANGE THIS FOR FINAL VERSION FOR MY OWN PROJECT TO INITIATE A NEW ORDER RANDOMIZED ALL ID WITHOUT THE HARD CODE
                 Order newOrder = new Order() { OrderId = 1, OrderNumber = "1", CustomerId = 1, ShoppingCartId = 100 };
                 order = newOrder;
                 uow.Orders.Add(newOrder);
             }
 
-           
-
+            UpdateTotal();
         }
         StateHasChanged();
     }
 
+    
+
     protected void UpdateTotal()
     {
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        totalQuantity = cartItems?.Sum(item => item.Quantity) ?? 0;
+
         var total = uow.ShoppingCarts.GetTotal(order.ShoppingCartId).ToString("c");
         checkoutTotal = $"Check Out - {total}";
     }
+
+    private int GetCartQuantity(int productId)
+    {
+        var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+        var item = cartItems?.FirstOrDefault(ci => ci.ProductId == productId);
+        return item?.Quantity ?? 0;
+    }
+
 
     protected void spinnerChange(int productId, object value)
     {
@@ -103,6 +113,8 @@ else
         UpdateTotal();
 
         var cartItems = uow.ShoppingCarts.GetProducts(order.ShoppingCartId);
+
+        StateHasChanged();
         
     }
 
